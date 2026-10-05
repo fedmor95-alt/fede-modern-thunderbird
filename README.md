@@ -5,8 +5,9 @@
 Canale condiviso: `https://github.com/fedmor95-alt/fede-modern-thunderbird/releases/latest/download/stable.json`.
 
 Pacchetto indipendente, non un fork né una distribuzione ufficiale Thunderbird.
-Release 1.0.8: canale pubblico degli aggiornamenti e pubblicazione automatica.
-Include il calendario e l'editor eventi della 1.0.7; contatori
+Release 1.0.9: calendario con interpretazione locale del campo Titolo e link
+Meet/Zoom, oltre al canale pubblico di aggiornamento. Include il calendario e
+l'editor eventi della 1.0.7; contatori
 account unificati esclusivamente non letti. Verificata su Thunderbird **156–157**
 Linux (Fedora e SteamOS). Supporto installer **macOS beta**, non ancora provato
 su un Mac reale; non è un DMG né una build modificata di Thunderbird. Il controllo
@@ -24,6 +25,16 @@ normale canale del sistema. Non disabilitare gli aggiornamenti di sicurezza.
 - Snooze e Swipe 1.0.6: sinistra archivia, destra apre le opzioni Posticipa;
   menu contestuale e azione del messaggio. Le scadenze rimangono locali.
 - Tema giorno/notte 1.0.0: opzioni e orari già impostati restano nel profilo.
+- Nell'editor eventi, scrivere per esempio `giovedì alle 11 taglio capelli con Marco`
+  nel **Titolo**: viene proposto il prossimo giovedì alle 11, il titolo diventa
+  `taglio capelli` e `Con Marco` resta nella descrizione. Marco non viene invitato
+  automaticamente. Date impostate manualmente non sono sovrascritte. Il parser
+  è locale, non usa rete, AI, contatti o plugin esterni.
+- `Videoconferenza` nell'editor: apre Google Meet o Zoom per creare/programmare,
+  poi aggiunge il link copiato all'evento e offre `Partecipa` quando un link è
+  presente. La generazione automatica del link dentro Thunderbird **non è ancora
+  attiva**: richiede le autorizzazioni OAuth e una registrazione app presso
+  Google/Zoom. I comandi non simulano una connessione già autorizzata.
 
 Non contiene account, password, OAuth, email, database, storage snooze o font
 Apple. Usa SF Pro se già installato legittimamente nel sistema; altrimenti il
@@ -38,7 +49,7 @@ almeno una volta. Non occorre root. Account e login si configurano separatamente
 
 ```bash
 python3 updater.py profiles
-python3 updater.py install releases/fede-modern-1.0.8.zip --profile /percorso/del/profilo --adopt --dry-run
+python3 updater.py install releases/fede-modern-1.0.9.zip --profile /percorso/del/profilo --adopt --dry-run
 python3 setup.py --profile /percorso/del/profilo --enable
 ```
 
@@ -71,10 +82,11 @@ Non occorre che Fedbook o Steam siano accesi contemporaneamente.
 
 Per pubblicare una modifica dalla pagina GitHub:
 
-1. Modifica i file in `payload/`. Se cambia un add-on, ricostruisci e aggiorna
-   anche il relativo XPI e incrementa la sua versione.
-2. Incrementa `VERSION`, per esempio da `1.0.8` a `1.0.9`, e salva su `main`.
-3. GitHub Actions esegue i test Linux/Mac, costruisce gli ZIP, carica tutti gli
+1. Modifica il CSS in `payload/chrome/` o l'add-on nei sorgenti `day-night-addon/`
+   e `calendar-assist/`. `build.py` ricostruisce automaticamente il relativo XPI;
+   incrementa la versione nel manifest quando cambi il suo codice.
+2. Incrementa `VERSION`, per esempio da `1.0.9` a `1.0.10`, e salva su `main`.
+3. GitHub Actions esegue i test Python e del parser su Linux/Mac, costruisce gli ZIP, carica tutti gli
    asset in una bozza e poi pubblica la release completa come ultima stabile.
 4. I dispositivi ricevono la nuova versione al controllo successivo disponibile.
 
@@ -88,14 +100,14 @@ rimangono sui dispositivi: questo canale distribuisce le personalizzazioni.
 
 Gli aggiornamenti dell'app Thunderbird continuano attraverso il suo canale
 abituale; le versioni del pacchetto dichiarano quali versioni principali sono
-state verificate. La 1.0.8 accetta Thunderbird 156–157.
+state verificate. La 1.0.9 accetta Thunderbird 156–157.
 
 ## Distribuzione locale alternativa
 
 1. Modificare i sorgenti e aggiornare `payload/`; incrementare versione add-on
    quando cambia codice XPI. Eseguire test e prova nel profilo fittizio.
 2. Creare una **nuova** release, senza riutilizzare un numero:
-   `python3 build.py --version 1.0.9`.
+   `python3 build.py --version 1.0.10`.
 3. Il canale locale `releases/stable.json` punta alla nuova release. Il servizio
    del computer principale la applica automaticamente quando Thunderbird chiude.
 4. Distribuire via SSH con `python3 deploy.py --host UTENTE@HOST --remote-home
@@ -135,7 +147,7 @@ Il rollback sottostante è identico su Mac, a Thunderbird chiuso.
 
 Non serve un fork di Thunderbird. Crea un repository pubblico del solo pacchetto,
 pubblica una GitHub Release e allega i kit Linux/Mac beta, i checksum,
-`fede-modern-1.0.8.zip` e `stable.json`. Un sito può avere due pulsanti che puntano
+`fede-modern-1.0.9.zip` e `stable.json`. Un sito può avere due pulsanti che puntano
 agli asset della release. Non pubblicare il profilo, le cartelle QA, le
 configurazioni personali, gli account o credenziali. Il builder usa un elenco
 chiuso di file e non legge il profilo.

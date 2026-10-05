@@ -1,0 +1,13 @@
+[
+  {
+    "namespace": "dayNight",
+    "functions": [
+      {
+        "name": "applyMode",
+        "type": "function",
+        "async": true,
+        "parameters": [{"name": "mode", "type": "string", "enum": ["light", "dark", "system"]}]
+      }
+    ]
+  }
+]

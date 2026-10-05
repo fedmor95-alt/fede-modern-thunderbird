@@ -24,7 +24,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - run: python -m unittest discover -p 'test_*.py' -q
+      - run: node calendar-assist/parse-title.test.mjs
 
   publish:
     needs: test

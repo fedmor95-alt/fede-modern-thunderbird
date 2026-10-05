@@ -1,0 +1,34 @@
+{
+  "manifest_version": 2,
+  "name": "Fede Modern — tema e calendario",
+  "version": "1.0.1",
+  "description": "Tema giorno/notte e creazione eventi dal titolo, con link Meet e Zoom.",
+  "author": "Fede Modern",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "fede-day-night@local",
+      "strict_min_version": "156.0"
+    }
+  },
+  "permissions": ["alarms", "storage"],
+  "background": {"page": "background.html"},
+  "options_ui": {"page": "options.html", "open_in_tab": true},
+  "experiment_apis": {
+    "dayNight": {
+      "schema": "experiment/schema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "paths": [["dayNight"]],
+        "script": "experiment/api.js"
+      }
+    },
+    "calendarAssist": {
+      "schema": "calendar-assist/schema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "paths": [["calendarAssist"]],
+        "script": "calendar-assist/experiment.js"
+      }
+    }
+  }
+}

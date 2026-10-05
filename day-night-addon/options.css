@@ -1,0 +1,15 @@
+:root {color-scheme: light dark; font: menu;}
+body {margin: 0; background: Canvas; color: CanvasText;}
+main {max-width: 34rem; margin: 3rem auto; padding: 0 1.5rem;}
+h1 {font-size: 1.7rem; font-weight: 650;}
+p {line-height: 1.6;}
+form {margin-top: 2rem;}
+.toggle {display: flex; align-items: center; gap: .7rem; margin-bottom: 1.7rem;}
+.time-row {display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1rem 0;}
+input, button {font: inherit;}
+input[type=time] {padding: .5rem; border: 1px solid GrayText; border-radius: .5rem;}
+input[type=checkbox] {width: 1.15rem; height: 1.15rem;}
+.hint {font-size: .9rem; opacity: .8;}
+button {padding: .6rem 1.25rem; border: 0; border-radius: .5rem; color: ButtonText; background: ButtonFace; cursor: pointer;}
+:focus-visible {outline: 2px solid Highlight; outline-offset: 3px;}
+#status {min-height: 1.6em;}

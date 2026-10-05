@@ -6,12 +6,25 @@ from pathlib import Path
 from unittest.mock import patch
 
 import build
+import build_calendar_addon
 import build_kit
 import setup
 import updater
 
 
 class DistributionTests(unittest.TestCase):
+    def test_theme_and_calendar_share_the_existing_extension_id(self):
+        with tempfile.TemporaryDirectory() as directory:
+            package = Path(directory) / 'theme.xpi'
+            self.assertEqual(build_calendar_addon.build(package), '1.0.1')
+            with zipfile.ZipFile(package) as zipped:
+                manifest = json.loads(zipped.read('manifest.json'))
+                self.assertEqual(manifest['browser_specific_settings']['gecko']['id'], 'fede-day-night@local')
+                self.assertEqual(set(manifest['experiment_apis']), {'dayNight', 'calendarAssist'})
+                self.assertIn('function parseTitle', zipped.read('calendar-assist/experiment.js').decode())
+                self.assertIn('messenger.calendarAssist.init()', zipped.read('background.js').decode())
+                self.assertNotIn('identity', manifest.get('permissions', []))
+
     def test_public_kits_select_shared_https_channel(self):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)

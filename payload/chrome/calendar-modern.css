@@ -182,6 +182,15 @@
     fill: white !important;
     font-weight: 600 !important;
   }
+  :is(#calendar-event-window #event-toolbar, #event-tab-toolbar) #fm-video-button {
+    margin-inline-start: auto !important;
+    background: color-mix(in srgb, var(--fm-accent) 12%, var(--fm-chrome)) !important;
+    color: var(--fm-accent) !important;
+    font-weight: 600 !important;
+  }
+  :is(#calendar-event-window #event-toolbar, #event-tab-toolbar) #fm-video-button:hover {
+    background: color-mix(in srgb, var(--fm-accent) 20%, var(--fm-chrome)) !important;
+  }
   #calendar-event-dialog-inner { padding: 10px 12px !important; box-sizing: border-box !important; min-inline-size: 0 !important; }
   #calendar-event-dialog-inner :is(#item-title,#item-location) { box-sizing: border-box !important; min-inline-size: 0 !important; }
   #calendar-event-dialog-inner #event-grid { border-spacing: 0 6px !important; }
@@ -203,6 +212,11 @@
     font-size: 19px !important;
     font-weight: 600 !important;
     min-block-size: 38px !important;
+  }
+  #calendar-event-dialog-inner #fm-calendar-title-hint:not([hidden]) {
+    color: var(--fm-accent) !important;
+    font: 500 11px var(--fm-font) !important;
+    padding: 4px 2px 1px !important;
   }
   #calendar-event-dialog-inner :is(input,menulist):focus-visible {
     outline: 2px solid var(--fm-accent) !important;

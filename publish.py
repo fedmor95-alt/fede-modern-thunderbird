@@ -52,6 +52,7 @@ def publish(repository, commit='main'):
         notes.write_text(
             f'Fede Modern {version}: personalizzazioni Thunderbird per Linux e macOS beta.\n\n'
             'Tema chiaro/scuro, posta, compositore, calendario, Snooze e Swipe.\n'
+            'Nel calendario data e ora sono interpretate localmente dal campo Titolo; Meet e Zoom si aprono nel browser, poi il link si aggiunge all’evento. La creazione automatica del link richiede ancora OAuth.\n'
             'Il kit Mac resta beta: non ancora verificato graficamente su hardware macOS.\n'
             'Account, messaggi, password e scadenze snooze personali restano sui dispositivi.\n\n'
             'Gli aggiornamenti controllano il canale pubblico ogni 15 minuti e vengono applicati a Thunderbird chiuso.\n'

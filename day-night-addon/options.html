@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tema giorno e notte</title>
+  <link rel="stylesheet" href="options.css">
+  <script type="module" src="options.js"></script>
+</head>
+<body>
+<main>
+  <h1>Tema giorno e notte</h1>
+  <p>Il tema cambia soltanto in Thunderbird. Il desktop resta invariato.</p>
+  <form id="settings">
+    <label class="toggle"><input id="enabled" type="checkbox"> Pianificazione automatica</label>
+    <div class="time-row"><label for="dayStart">Tema chiaro dalle</label><input id="dayStart" type="time" required value="07:00"></div>
+    <div class="time-row"><label for="nightStart">Tema scuro dalle</label><input id="nightStart" type="time" required value="20:00"></div>
+    <p class="hint">Si usa l’ora locale del computer (<span id="timezone"></span>), compresa l’ora legale. Il cambio avviene entro un minuto, anche dopo la sospensione.</p>
+    <p class="hint">Mantieni selezionato «Tema di sistema — automatico» in Componenti aggiuntivi e temi. Disattivando la pianificazione, viene ripristinata la preferenza precedente.</p>
+    <button type="submit">Salva</button>
+    <p id="status" role="status" aria-live="polite"></p>
+  </form>
+</main>
+</body>
+</html>

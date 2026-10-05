@@ -6,11 +6,13 @@ import json
 from pathlib import Path
 import zipfile
 from updater import ALLOWED, atomic
+from build_calendar_addon import build as build_theme_calendar
 
 ROOT = Path(__file__).resolve().parent
 
 
 def build(version, destination):
+    build_theme_calendar(ROOT / 'payload/extensions/fede-day-night@local.xpi')
     payload = {name: (ROOT / 'payload' / name).read_bytes() for name in sorted(ALLOWED)}
     manifest = {'product': 'fede-modern', 'version': version,
                 'compatibility': {'min_major': 156, 'max_major': 157},
