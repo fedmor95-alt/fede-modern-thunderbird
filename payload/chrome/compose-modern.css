@@ -1,0 +1,354 @@
+/* Fede Modern — composizione e risposta, affinamento "foglio".
+   Solo la finestra chrome: nessuna regola entra nel documento dell'email.
+   Riusa palette, font e raggi del tema; conserva controlli e stati nativi.
+   Sorgente verificata: messengercompose.xhtml e shared/messengercompose.css. */
+@-moz-document url("chrome://messenger/content/messengercompose/messengercompose.xhtml") {
+  @media (forced-colors: none) {
+    #msgcomposeWindow {
+      --toolbar-background-color: var(--fm-chrome);
+      --toolbarbutton-background-color-hover: var(--fm-hover);
+      --toolbarbutton-background-color-active: var(--fm-side-selected);
+      --toolbarbutton-checked-background: var(--fm-side-selected);
+      --toolbarbutton-hover-bordercolor: var(--fm-hairline);
+      --toolbar-field-focus-border-color: var(--fm-accent);
+      --focus-outline-color: var(--fm-accent);
+      --button-border-radius: var(--fm-radius-sm);
+      background-color: var(--fm-chrome) !important;
+      color: var(--fm-text) !important;
+    }
+
+    /* Una superficie continua, senza l'ombra incassata del composer classico. */
+    #compose-toolbox,
+    #composeToolbar2,
+    #MsgHeadersToolbar,
+    #FormatToolbox,
+    #FormatToolbar {
+      background-color: var(--fm-chrome) !important;
+      background-image: none !important;
+      color: var(--fm-text) !important;
+      box-shadow: none !important;
+    }
+
+    #compose-toolbox {
+      border-block-end: 1px solid var(--fm-hairline) !important;
+    }
+
+    #composeContentBox {
+      background-color: var(--fm-chrome) !important;
+      box-shadow: none !important;
+      /* Gli stessi nodi nativi: la formattazione è una barra a fondo foglio.
+         Sidebar, separatori ridimensionabili e allegati restano nella griglia. */
+      grid-template:
+        "contacts contacts-splitter headers" minmax(auto, var(--headersSplitter-height))
+        "contacts contacts-splitter headers-splitter" min-content
+        "contacts contacts-splitter message" minmax(33%, 1fr)
+        "contacts contacts-splitter format-toolbar" min-content
+        "contacts contacts-splitter attachment-splitter" min-content
+        "contacts contacts-splitter attachment-area" min-content
+        / minmax(auto, var(--contactsSplitter-width)) min-content minmax(0, 1fr) !important;
+    }
+
+    #composeToolbar2 {
+      padding: 8px 18px !important;
+      font-size: 13px !important;
+    }
+
+    #composeToolbar2 .toolbarbutton-1 {
+      border-radius: var(--fm-radius) !important;
+      min-block-size: 32px !important;
+      padding-inline: 8px !important;
+    }
+
+    /* Etichette per le due azioni principali. Le altre mantengono icona,
+       nome accessibile, tooltip, scorciatoia e menu a discesa nativi. */
+    #composeToolbar2 .toolbarbutton-1:not(#button-send):not(#button-attach)
+      .toolbarbutton-text {
+      display: none !important;
+    }
+
+    #composeToolbar2 .toolbarbutton-icon {
+      inline-size: 16px !important;
+      block-size: 16px !important;
+    }
+
+    #composeToolbar2 toolbarseparator {
+      opacity: 0.4;
+    }
+
+    #composeToolbar2 #button-send {
+      font-weight: 600 !important;
+    }
+
+    #compose-toolbar-menubar2 {
+      background: var(--fm-chrome) !important;
+      color: var(--fm-text-2) !important;
+      font-size: 12px !important;
+      border: 0 !important;
+      padding-inline: 12px !important;
+    }
+
+    #composeToolbar2 #button-send:not([disabled="true"]) {
+      background-color: var(--fm-accent) !important;
+      color: #ffffff !important;
+      fill: #ffffff !important;
+      border: 1px solid transparent !important;
+      padding-inline: 12px !important;
+    }
+
+    #composeToolbar2 #button-send:not([disabled="true"]):hover {
+      background-color: color-mix(in srgb, var(--fm-accent) 88%, black) !important;
+    }
+
+    #composeToolbar2 .toolbarbutton-1:focus-visible {
+      outline: 2px solid var(--fm-accent) !important;
+      outline-offset: 2px !important;
+    }
+
+    /* Campi leggeri, con un'unica colonna di etichette. CC/CCN, Reply-To,
+       rimozione destinatari e cambio identità restano nativi. */
+    #MsgHeadersToolbar {
+      padding: 4px 18px 2px !important;
+    }
+
+    #top-gradient-box,
+    .address-row {
+      margin-block: 0 !important;
+      margin-inline-end: 0 !important;
+      min-inline-size: 0 !important;
+    }
+
+    #top-gradient-box {
+      padding-block: 4px !important;
+    }
+
+    .address-row:not(.hidden),
+    #subject-box {
+      padding-block: 4px !important;
+      border-block-end: 1px solid var(--fm-hairline) !important;
+    }
+
+    #MsgHeadersToolbar .aw-firstColBox {
+      inline-size: 20px !important;
+      padding-inline: 0 !important;
+      flex: 0 0 20px !important;
+    }
+
+    #identityLabel-box,
+    #subjectLabel-box,
+    .address-label-container {
+      min-inline-size: 0 !important;
+      inline-size: 4.6em !important;
+      max-inline-size: 4.6em !important;
+      flex: 0 0 4.6em !important;
+      align-self: center !important;
+    }
+
+    #identityLabel,
+    #subjectLabel,
+    .address-label-container label {
+      color: var(--fm-text-2) !important;
+      font-size: 12px !important;
+      font-weight: 400 !important;
+      margin-inline-end: 10px !important;
+    }
+
+    #msgIdentity {
+      min-block-size: 28px !important;
+      border-radius: var(--fm-radius) !important;
+      font-weight: 500 !important;
+      flex: 1 1 0 !important;
+      min-inline-size: 0 !important;
+      margin-inline: 0 8px !important;
+    }
+
+    #msgIdentity:not([disabled]):is(:hover, [open="true"]) {
+      background-color: var(--fm-field) !important;
+      border-color: var(--fm-hairline) !important;
+    }
+
+    .address-container,
+    #msgSubject {
+      border: 1px solid transparent !important;
+      border-radius: var(--fm-radius-sm) !important;
+      background-color: transparent !important;
+      color: var(--fm-text) !important;
+      margin-inline: 0 !important;
+    }
+
+    .address-container {
+      min-block-size: 34px !important;
+      padding-block: 0 !important;
+    }
+
+    .address-container > .address-input {
+      padding: 5px 8px !important;
+    }
+
+    .address-container:is([focused="true"], .drag-address-container),
+    #msgSubject:focus {
+      border-color: var(--fm-accent) !important;
+      outline: 2px solid var(--fm-accent) !important;
+      outline-offset: 0 !important;
+    }
+
+    .address-pill {
+      border-radius: 12px !important;
+      min-block-size: 24px;
+      max-inline-size: 100% !important;
+      font-weight: 500 !important;
+    }
+
+    /* Non toccare il rosso degli indirizzi errati, il giallo delle chiavi,
+       il drag/drop, l'editing o la selezione delle pillole. */
+    .address-pill:not(.editing):not(.invalid-address):not(.key-issue):not([selected]) {
+      background-color: var(--fm-field) !important;
+      color: var(--fm-text) !important;
+    }
+
+    .address-pill:focus-visible {
+      outline: 2px solid var(--fm-accent);
+      outline-offset: 1px;
+    }
+
+    #extraAddressRowsArea {
+      gap: 3px !important;
+      flex: 0 0 auto !important;
+    }
+
+    #extraAddressRowsArea > button {
+      min-block-size: 28px;
+      border-radius: var(--fm-radius-sm) !important;
+      font-size: 12px !important;
+    }
+
+    #extraAddressRowsArea > .recipient-button {
+      padding: 4px 7px !important;
+    }
+
+    #msgSubject {
+      min-block-size: 36px !important;
+      padding-inline: 8px !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+    }
+
+    #msgSubject.with-icon {
+      padding-inline-start: 30px !important;
+    }
+
+    #msgEncryptedSubjectIcon {
+      inset-block-start: 50% !important;
+      transform: translateY(-50%);
+    }
+
+    /* La barra di formattazione mantiene anche stati checked/disabled,
+       menu, icone e selettori di colore originali. */
+    #FormatToolbar {
+      padding: 7px 14px !important;
+      gap: 1px !important;
+      flex-wrap: wrap !important;
+      row-gap: 4px !important;
+      font-size: 12px !important;
+      border-block-start: 1px solid var(--fm-hairline) !important;
+      min-inline-size: 0 !important;
+    }
+
+    #FormatToolbar > :is(menulist, .formatting-button) {
+      border-radius: var(--fm-radius-sm) !important;
+    }
+
+    #FormatToolbar > menulist {
+      min-block-size: 28px !important;
+      border-color: transparent !important;
+      background-color: transparent !important;
+      font-size: 12px !important;
+    }
+
+    #FormatToolbar > menulist:is(:hover, [open="true"]) {
+      background-color: var(--fm-hover) !important;
+    }
+
+    #ParagraphSelect {
+      inline-size: 90px !important;
+      min-inline-size: 0 !important;
+    }
+
+    #FontFaceSelect {
+      inline-size: 116px !important;
+      min-inline-size: 0 !important;
+      max-inline-size: 116px !important;
+    }
+
+    #FormatToolbar .formatting-button {
+      min-block-size: 28px !important;
+      margin-inline: 0 !important;
+      border-radius: var(--fm-radius-sm) !important;
+    }
+
+    #FormatToolbar .formatting-button:focus-visible {
+      outline: 2px solid var(--fm-accent) !important;
+      outline-offset: 1px !important;
+    }
+
+    /* Cornice esterna soltanto: font, colori, firma e citazioni della mail
+       restano sotto il controllo dell'editor e delle preferenze dell'utente. */
+    #messageArea {
+      margin: 8px 18px 8px;
+      border: 0;
+      border-radius: var(--fm-sheet-radius);
+    }
+
+    #messageEditor {
+      border-radius: var(--fm-sheet-radius);
+    }
+
+    #attachmentArea > summary {
+      padding: 8px 12px !important;
+      gap: 8px !important;
+      background-color: var(--fm-chrome) !important;
+      color: var(--fm-text) !important;
+    }
+
+    #attachmentBucket {
+      padding: 4px 8px !important;
+      border-color: var(--fm-hairline) !important;
+    }
+
+    #status-bar {
+      padding: 3px 8px;
+      background-color: var(--fm-chrome) !important;
+      border-block-start: 1px solid var(--fm-hairline);
+    }
+
+    @media (max-width: 680px) {
+      #MsgHeadersToolbar {
+        padding-inline: 8px !important;
+      }
+
+      #composeToolbar2 {
+        padding-inline: 10px !important;
+      }
+
+      #top-gradient-box {
+        min-inline-size: 0 !important;
+      }
+
+      #msgIdentity {
+        flex: 1 1 0 !important;
+        min-inline-size: 0 !important;
+      }
+
+      #extraAddressRowsArea {
+        flex: 0 0 auto !important;
+      }
+
+      #FormatToolbar {
+        padding-inline: 10px !important;
+      }
+
+      #messageArea {
+        margin-inline: 8px;
+      }
+    }
+  }
+}

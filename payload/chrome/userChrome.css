@@ -1,0 +1,15 @@
+/* Tema attivo: Fede Modern (stile macOS / GNOME, chiaro e scuro automatici).
+   Per tornare al vecchio tema Spark: sostituire l'import con
+   @import "themes/modern-spark/userChrome.css"; e @import "system-colors.css";
+   Copia completa del file precedente: userChrome.backup-2026-09-25.css */
+@import "themes/fede-modern/userChrome.css";
+@import "compose-modern.css";
+@import "search-modern.css";
+@import "interface-refinements.css";
+
+/* Nessun contatore in basso, nella sezione Tutte le cartelle.
+   Restano visibili i non letti nelle cartelle unificate in alto. */
+#folderTree li[data-mode="all"] .unread-count,
+#folderTree li[data-mode="all"] .total-count {
+    display: none !important;
+}

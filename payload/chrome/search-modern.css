@@ -1,0 +1,219 @@
+/* Native global-search results and advanced search, using Fede Modern colors. */
+@font-face {
+  font-family: "Fede Search Text";
+  font-style: normal;
+  font-weight: 400;
+  src: local("SF Pro Text Regular"), local("SFProText-Regular");
+}
+@font-face {
+  font-family: "Fede Search Text";
+  font-style: normal;
+  font-weight: 600;
+  src: local("SF Pro Text Semibold"), local("SFProText-Semibold");
+}
+@font-face {
+  font-family: "Fede Search Text";
+  font-style: normal;
+  font-weight: 700;
+  src: local("SF Pro Text Bold"), local("SFProText-Bold");
+}
+
+@-moz-document url("chrome://messenger/content/glodaFacetView.xhtml"),
+  url("chrome://messenger/content/SearchDialog.xhtml") {
+  @media not (forced-colors: active) {
+    :root {
+      --fs-font: "Fede Search Text", "SF Pro Text", system-ui, sans-serif;
+      --fs-chrome: light-dark(#ececef, #2a2a2d);
+      --fs-content: light-dark(#ffffff, #1d1d20);
+      --fs-text: light-dark(#1d1d1f, #f5f5f7);
+      --fs-muted: light-dark(#6e6e73, #a1a1a6);
+      --fs-hairline: light-dark(#e5e5ea, #2f2f33);
+      --fs-hover: light-dark(rgba(0, 0, 0, .05), rgba(255, 255, 255, .06));
+      --fs-field: light-dark(rgba(0, 0, 0, .06), rgba(255, 255, 255, .08));
+      --fs-accent: light-dark(#007aff, #0a84ff);
+      --fs-focus: color-mix(in srgb, var(--fs-accent) 60%, transparent);
+      font-family: var(--fs-font) !important;
+      color: var(--fs-text);
+    }
+
+    #gloda-facet-view {
+      grid-template-columns: clamp(180px, 20vw, 248px) minmax(0, 1fr) !important;
+      background: var(--fs-content) !important;
+      color: var(--fs-text) !important;
+      font: 13px/1.5 var(--fs-font) !important;
+    }
+    .facets-sidebar {
+      background: var(--fs-chrome) !important;
+      color: var(--fs-text) !important;
+      padding: 24px 16px !important;
+    }
+    #filter-header-label {
+      font-size: 16px !important;
+      font-weight: 700 !important;
+      margin-block: 0 18px !important;
+    }
+    #main-column {
+      min-inline-size: 0 !important;
+      max-inline-size: 1120px !important;
+      padding-inline: clamp(16px, 3vw, 36px) !important;
+    }
+    #header {
+      gap: 16px !important;
+      flex-wrap: wrap !important;
+      margin-block: 24px 18px !important;
+    }
+    #query-explanation { font-size: 13px !important; }
+    .explanation-fulltext-label, .explanation-query-label {
+      font-size: 19px !important;
+      font-weight: 700 !important;
+      letter-spacing: -.015em;
+    }
+    #data-column { margin-inline-end: 0 !important; }
+    .results-message-header {
+      border-block-end: 1px solid var(--fs-hairline) !important;
+      padding-block: 10px !important;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .results-message-count { font-size: 13px !important; }
+    .results-message-sort-bar { gap: 4px; }
+    .results-message-showall-button, .show-more, .gloda-timeline-button,
+    #gloda-facet-view button {
+      font-family: var(--fs-font) !important;
+      font-size: 12px !important;
+      border-radius: 8px !important;
+      min-block-size: 30px;
+    }
+    .results-message-showall-button {
+      margin-inline-end: 0 !important;
+      padding-block: 8px !important;
+      padding-inline-start: 12px !important;
+      background-color: var(--fs-field);
+      color: var(--fs-text) !important;
+    }
+    .results-message-showall-button:is(:hover, :focus-visible) {
+      background-color: var(--fs-hover) !important;
+      outline: 2px solid var(--fs-focus);
+      outline-offset: 2px;
+    }
+    .message {
+      font: 13px/1.5 var(--fs-font) !important;
+      color: var(--fs-text) !important;
+      margin-block: 6px !important;
+      padding: 16px !important;
+      border: 1px solid var(--fs-hairline) !important;
+      border-radius: 12px !important;
+      box-shadow: none !important;
+      background: var(--fs-content) !important;
+    }
+    .message:hover { background: var(--fs-hover) !important; }
+    .message:focus-visible {
+      outline: 2px solid var(--fs-focus) !important;
+      outline-offset: 2px !important;
+    }
+    .message-header { margin-block-end: 10px !important; }
+    .message-subject {
+      color: var(--fs-text) !important;
+      font-size: 16px !important;
+      font-weight: 600 !important;
+      text-decoration: none !important;
+      border-radius: 4px;
+    }
+    .message-subject:is(:hover, :focus-visible) {
+      color: var(--fs-accent) !important;
+      background: transparent !important;
+      text-decoration: underline !important;
+    }
+    .message[unread="true"] .message-subject { font-weight: 700 !important; }
+    .message-meta, .message-recipients-group { color: var(--fs-muted) !important; }
+    .message-author, .message-recipients {
+      font-family: var(--fs-font) !important;
+      color: var(--fs-text) !important;
+    }
+    .message-body {
+      font: 13px/1.6 var(--fs-font) !important;
+      color: var(--fs-muted) !important;
+      margin-inline-start: 0 !important;
+      margin-block: 8px 0 !important;
+    }
+    /* Native result widgets also create these containers when metadata is empty. */
+    .message-recipients-group:not(:has(.message-recipient)),
+    .message-attachments:not(:has(.message-attachment)) {
+      display: none !important;
+    }
+    .message-body-fulltext-match {
+      background: color-mix(in srgb, var(--fs-accent) 18%, transparent) !important;
+      color: var(--fs-text) !important;
+      padding-inline: 2px;
+      border-radius: 3px !important;
+    }
+    .facet-checkbox-bubble { border-radius: 7px !important; padding: 5px 7px !important; }
+    .facet-content .barry, .facet-content .bar { border: 0 !important; }
+    .facet-content .bar { border-radius: 6px !important; margin-block: 2px; }
+    .facet-content .bar-link { color: var(--fs-text) !important; padding-block: 6px !important; }
+    .facet-content .bar-count { color: var(--fs-muted); padding-block-start: 3px; }
+    .facet-content .bar:is(:hover, :focus, [selected="true"]) {
+      background: color-mix(in srgb, var(--fs-accent) 15%, transparent) !important;
+      outline-offset: 1px;
+    }
+    .facet-content .bar:is(:hover, :focus, [selected="true"]) :is(.bar-link, .bar-count) {
+      color: var(--fs-text) !important;
+    }
+    .facetious h2, .facetious h3 { font-size: 13px !important; font-weight: 600 !important; }
+    .popup-menu { border-color: var(--fs-hairline) !important; border-radius: 10px !important; }
+    .popup-menuitem { font-family: var(--fs-font) !important; padding: 7px 12px !important; }
+    #showEmpty > span, #showLoading > span {
+      background: transparent !important;
+      border: 0 !important;
+      color: var(--fs-muted) !important;
+    }
+
+    /* Advanced native search: retain all rules, columns and actions. */
+    #searchTerms {
+      background: var(--fs-chrome) !important;
+      padding: 18px 20px !important;
+      border-block-end: 1px solid var(--fs-hairline);
+    }
+    #searchTerms > vbox > hbox { gap: 8px; margin-block: 4px; }
+    #searchTermListBox { margin-block-start: 12px; }
+    #searchTermList {
+      background: var(--fs-content) !important;
+      border: 1px solid var(--fs-hairline) !important;
+      border-radius: 10px !important;
+      padding: 6px !important;
+    }
+    #searchTerms :is(menulist, input, button), #searchResults button {
+      border-radius: 8px !important;
+      min-block-size: 30px;
+      font-family: var(--fs-font) !important;
+    }
+    #search-button:not([disabled]) {
+      background: var(--fs-accent) !important;
+      color: #ffffff !important;
+      border-color: transparent !important;
+    }
+    #searchResults {
+      background: var(--fs-content) !important;
+      padding: 12px 16px !important;
+    }
+    #searchResults tree {
+      background: var(--fs-content) !important;
+      color: var(--fs-text) !important;
+      font-family: var(--fs-font) !important;
+      border: 1px solid var(--fs-hairline) !important;
+      border-radius: 10px !important;
+    }
+    #searchResults treechildren::-moz-tree-row { height: 30px !important; }
+    #searchResults treecol {
+      background: var(--fs-chrome) !important;
+      color: var(--fs-muted) !important;
+      border-color: var(--fs-hairline) !important;
+    }
+    #status-bar { border-block-start: 1px solid var(--fs-hairline) !important; }
+    @media (max-width: 700px) {
+      #gloda-facet-view { grid-template-columns: 168px minmax(0, 1fr) !important; }
+      .facets-sidebar { padding-inline: 10px !important; }
+      .message-meta { float: none !important; text-align: start !important; padding-inline-start: 0 !important; }
+    }
+  }
+}

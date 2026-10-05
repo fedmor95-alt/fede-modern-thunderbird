@@ -1,0 +1,1199 @@
+/* ==========================================================================
+   Fede Modern v2: Thunderbird in stile macOS Mail / GNOME (libadwaita)
+   Chiaro e scuro automatici (segue il tema di sistema).
+   Richiede: mail.threadpane.cardsview.rowcount = 2 (impostato in user.js).
+   Sezioni 2 e 9-12 derivate da modern-spark (themes/modern-spark intatto).
+   ========================================================================== */
+
+
+/* SF Pro incluso nel tema con tutti i pesi usati: 400, 500, 600, 700 */
+@font-face {
+    font-family: "Fede SF Text";
+    font-style: normal;
+    font-weight: 400;
+    src: local("SF Pro Text Regular"), local("SFProText-Regular");
+}
+
+@font-face {
+    font-family: "Fede SF Text";
+    font-style: normal;
+    font-weight: 500;
+    src: local("SF Pro Text Medium"), local("SFProText-Medium");
+}
+
+@font-face {
+    font-family: "Fede SF Text";
+    font-style: normal;
+    font-weight: 600;
+    src: local("SF Pro Text Semibold"), local("SFProText-Semibold");
+}
+
+@font-face {
+    font-family: "Fede SF Text";
+    font-style: normal;
+    font-weight: 700;
+    src: local("SF Pro Text Bold"), local("SFProText-Bold");
+}
+
+@font-face {
+    font-family: "Fede SF Display";
+    font-style: normal;
+    font-weight: 400;
+    src: local("SF Pro Display Regular"), local("SFProDisplay-Regular");
+}
+
+@font-face {
+    font-family: "Fede SF Display";
+    font-style: normal;
+    font-weight: 600;
+    src: local("SF Pro Display Semibold"), local("SFProDisplay-Semibold");
+}
+
+@font-face {
+    font-family: "Fede SF Display";
+    font-style: normal;
+    font-weight: 700;
+    src: local("SF Pro Display Bold"), local("SFProDisplay-Bold");
+}
+
+/* --------------------------------------------------------------------------
+   0. Palette e caratteri
+   -------------------------------------------------------------------------- */
+
+:root {
+    --fm-font: "Fede SF Text", "SF Pro Text", system-ui, sans-serif;
+    --fm-font-display: "Fede SF Display", "SF Pro Display", system-ui, sans-serif;
+
+    --fm-chrome: #ececef;
+    --fm-content: #ffffff;
+    --fm-text: #1d1d1f;
+    --fm-text-2: #6e6e73;
+    --fm-text-3: #8e8e93;
+    --fm-hairline: #e5e5ea;
+    --fm-hover: rgba(0, 0, 0, 0.05);
+    --fm-side-selected: rgba(0, 0, 0, 0.09);
+    --fm-sel: #0064e1;
+    --fm-sel-text: #ffffff;
+    --fm-sel-unfocused: #dcdcdf;
+    --fm-accent: #007aff;
+    --fm-badge-bg: rgba(0, 0, 0, 0.08);
+    --fm-badge-text: #6e6e73;
+    --fm-field: rgba(0, 0, 0, 0.06);
+    --fm-field-focus: #ffffff;
+    --fm-flag: #ff9500;
+
+    --fm-radius: 8px;
+    --fm-radius-sm: 6px;
+    --fm-sheet-radius: 10px;
+
+    /* alias per le sezioni 2 e 9-12 */
+    --fm-sidebar: var(--fm-chrome);
+    --fm-toolbar: var(--fm-chrome);
+    --fm-muted: var(--fm-text-2);
+    --spark-blue: var(--fm-accent);
+    --selected-item-color: var(--fm-accent);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --fm-chrome: #2a2a2d;
+        --fm-content: #1d1d20;
+        --fm-text: #f5f5f7;
+        --fm-text-2: #a1a1a6;
+        --fm-text-3: #7c7c82;
+        --fm-hairline: #2f2f33;
+        --fm-hover: rgba(255, 255, 255, 0.06);
+        --fm-side-selected: rgba(255, 255, 255, 0.10);
+        --fm-sel: #0058d0;
+        --fm-sel-unfocused: #3a3a3d;
+        --fm-accent: #0a84ff;
+        --fm-badge-bg: rgba(255, 255, 255, 0.10);
+        --fm-badge-text: #a1a1a6;
+        --fm-field: rgba(255, 255, 255, 0.08);
+        --fm-field-focus: rgba(255, 255, 255, 0.12);
+        --fm-flag: #ff9f0a;
+    }
+}
+
+:root,
+body,
+#folderTree,
+#threadTree,
+#threadPaneHeaderBar,
+#quick-filter-bar,
+unified-toolbar,
+#messageHeader {
+    font-family: var(--fm-font) !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   1. Barra laterale: stessa superficie della barra in alto, righe a pillola
+   -------------------------------------------------------------------------- */
+
+body:is(.layout-classic, .layout-vertical, .layout-wide, .account-central),
+#folderPane,
+#folderPaneHeaderBar {
+    background-color: var(--fm-chrome) !important;
+}
+
+#folderPane {
+    color: var(--fm-text) !important;
+    --sidebar-background: var(--fm-chrome);
+    --sidebar-border: transparent;
+    --layout-color-3: var(--fm-text-3);
+    --new-folder-color: var(--fm-accent);
+    --folderpane-unread-count-background: var(--fm-badge-bg);
+    --folderpane-unread-count-text: var(--fm-badge-text);
+    --folderpane-unread-new-count-background: var(--fm-badge-bg);
+    --list-container-border: transparent;
+    --list-container-border-hover: transparent;
+    --list-container-border-selected: transparent;
+    --list-container-border-selected-current: transparent;
+    --list-container-border-selected-focused: transparent;
+    --list-container-border-selected-current-focused: transparent;
+    --list-container-background-hover: var(--fm-hover);
+    --list-container-background-selected: var(--fm-side-selected);
+    --list-container-background-selected-current: var(--fm-side-selected);
+    --list-container-background-selected-focused: var(--fm-side-selected);
+    --list-container-background-selected-current-focused: var(--fm-side-selected);
+}
+
+#folderTree,
+#folderTree > li {
+    background-color: transparent !important;
+}
+
+#folderTree {
+    font-size: 13px !important;
+    padding-block: 4px 8px !important;
+}
+
+#folderTree::before {
+    display: none !important;
+}
+
+#folderTree::after {
+    background-color: var(--fm-chrome) !important;
+}
+
+#folderTree li[data-mode] {
+    margin-block-end: 0 !important;
+}
+
+#folderTree .container {
+    min-block-size: 28px !important;
+    padding-block: 0 !important;
+    margin-inline: 10px !important;
+    padding-inline-start: calc(var(--indent, 0px) + 8px) !important;
+    padding-inline-end: 8px !important;
+    border: none !important;
+    border-radius: var(--fm-radius-sm) !important;
+    color: var(--fm-text) !important;
+}
+
+#folderTree .name {
+    margin-inline-start: 2px !important;
+    font-weight: 400 !important;
+}
+
+#folderTree li.unread > .container > .name,
+#folderTree li[data-server-type] > .container > .name {
+    font-weight: 600 !important;
+}
+
+#folderTree .mode-container {
+    padding-block: 16px 4px !important;
+    padding-inline: 18px 10px !important;
+    min-block-size: 0 !important;
+}
+
+#folderTree .mode-name {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em !important;
+    text-transform: none !important;
+    color: var(--fm-text-3) !important;
+}
+
+#folderTree .mode-container button {
+    opacity: 0;
+}
+
+#folderTree .mode-container:hover button,
+#folderTree .mode-container button:focus-visible {
+    opacity: 1;
+}
+
+#folderTree .unread-count {
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    font-variant-numeric: tabular-nums;
+    min-inline-size: 20px !important;
+    block-size: 18px !important;
+    line-height: 18px !important;
+    padding: 0 6px !important;
+    border: none !important;
+    border-radius: 9px !important;
+    text-align: center !important;
+    background-color: var(--fm-badge-bg) !important;
+    color: var(--fm-badge-text) !important;
+    box-sizing: border-box !important;
+}
+
+#folderTree li.selected > .container > .unread-count {
+    background-color: var(--fm-accent) !important;
+    color: #ffffff !important;
+}
+
+#folderTree .twisty {
+    inline-size: 14px !important;
+}
+
+#folderTree .twisty-icon {
+    inline-size: 8px !important;
+    block-size: 8px !important;
+    fill: var(--fm-text-3) !important;
+}
+
+/* nessun bollino/barra colore account, né in barra laterale né nei messaggi */
+#folderTree .container > .account-indicator,
+#threadTree .account-indicator {
+    display: none !important;
+}
+
+#folderPaneSplitter {
+    --splitter-color: transparent;
+    border-color: transparent !important;
+}
+
+#messagePaneSplitter {
+    --splitter-color: var(--fm-hairline);
+    border-color: var(--fm-hairline) !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. Barra laterale: nessuna icona cartella
+      (the icon is kept only while a folder is syncing or has an error)
+   -------------------------------------------------------------------------- */
+
+#folderTree li:not([data-is-busy="true"]):not([data-has-error="true"]) > .container > .icon,
+#folderTree .container > .new-icon {
+    display: none !important;
+}
+
+#folderTree .name {
+    margin-inline-start: 2px !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   3. Elenco messaggi: schede su 2 righe, letto/non letto netti, selezione blu
+   -------------------------------------------------------------------------- */
+
+#threadPane {
+    background-color: var(--fm-content) !important;
+    border-start-start-radius: var(--fm-sheet-radius);
+}
+
+#threadTree {
+    background-color: var(--fm-content) !important;
+}
+
+#threadTree[rows="thread-card"] {
+    --tree-pane-background: var(--fm-content);
+    --tree-card-background: transparent;
+    --tree-card-border: transparent;
+    --tree-card-border-hover: transparent;
+    --tree-card-border-focus: transparent;
+    --tree-card-border-selected: transparent;
+    --tree-card-border-selected-unfocused: transparent;
+    --tree-card-background-current: var(--fm-hover);
+    --tree-card-background-current-unfocused: var(--fm-hover);
+    --tree-card-background-selected: var(--fm-sel);
+    --tree-card-background-selected-current: var(--fm-sel);
+    --tree-card-background-selected-unfocused: var(--fm-sel-unfocused);
+    --tree-card-background-selected-current-unfocused: var(--fm-sel-unfocused);
+    --tree-card-background-selected-current-unfocused-hover: var(--fm-sel-unfocused);
+    padding-block: 4px !important;
+}
+
+#threadTree[rows="thread-card"] tbody > .card-layout > td {
+    padding-block: 0 !important;
+    padding-inline-end: 6px !important;
+}
+
+#threadTree[rows="thread-card"] tbody > .card-layout:not([data-properties~="thread-children"]) > td {
+    padding-inline-start: 6px !important;
+}
+
+/* scheda: niente bordo né ombra; separatore sottile che parte dal testo */
+#threadTree[rows="thread-card"] .card-layout > td > .card-container {
+    border: none !important;
+    border-radius: var(--fm-radius) !important;
+    box-shadow: none !important;
+    outline: none !important;
+    padding-inline-start: 4px !important;
+    padding-inline-end: calc(12px + env(scrollbar-inline-size)) !important;
+    background-color: transparent !important;
+    background-image: linear-gradient(var(--fm-hairline), var(--fm-hairline)) !important;
+    background-repeat: no-repeat !important;
+    background-size: calc(100% - 30px) 1px !important;
+    background-position: left 22px bottom 0 !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout:focus-visible {
+    outline: none !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout:hover:not(.selected) > td > .card-container {
+    background-color: var(--fm-hover) !important;
+}
+
+#threadTree[rows="thread-card"]:focus-within .card-layout.selected > td > .card-container {
+    background-color: var(--fm-sel) !important;
+    color: var(--fm-sel-text) !important;
+}
+
+#threadTree[rows="thread-card"]:not(:focus-within) .card-layout.selected > td > .card-container {
+    background-color: var(--fm-sel-unfocused) !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout:is(.selected, :hover) > td > .card-container,
+#threadTree[rows="thread-card"] .card-layout:has(+ .card-layout:is(.selected, :hover)) > td > .card-container {
+    background-image: none !important;
+}
+
+/* Letto / non letto tramite variabili: la selezione le sovrascrive sempre */
+#threadTree[rows="thread-card"] .card-layout {
+    --fm-c-sender: var(--fm-text-2);
+    --fm-c-subject: var(--fm-text-2);
+    --fm-c-date: var(--fm-text-3);
+    --fm-w-sender: 400;
+    --fm-w-subject: 400;
+    --fm-w-date: 400;
+}
+
+#threadTree[rows="thread-card"] .card-layout:is(
+    [data-properties~="unread"],
+    [data-properties~="new"],
+    .collapsed[data-properties~="hasUnread"]
+) {
+    --fm-c-sender: var(--fm-text);
+    --fm-c-subject: var(--fm-text);
+    --fm-c-date: var(--fm-text);
+    --fm-w-sender: 700;
+    --fm-w-subject: 600;
+    --fm-w-date: 600;
+}
+
+#threadTree[rows="thread-card"]:focus-within .card-layout.selected > td > .card-container {
+    --fm-c-sender: #ffffff;
+    --fm-c-subject: #ffffff;
+    --fm-c-date: rgba(255, 255, 255, 0.8);
+}
+
+#threadTree[rows="thread-card"] .card-layout:not([data-properties~="dummy"]) .card-container .sender {
+    font-size: 14px !important;
+    letter-spacing: -0.01em;
+    font-weight: var(--fm-w-sender) !important;
+    color: var(--fm-c-sender) !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout:not([data-properties~="dummy"]) .card-container .subject {
+    font-size: 13px !important;
+    font-weight: var(--fm-w-subject) !important;
+    color: var(--fm-c-subject) !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout:not([data-properties~="dummy"]) .card-container .date {
+    font-size: 12px !important;
+    font-weight: var(--fm-w-date) !important;
+    color: var(--fm-c-date) !important;
+    font-variant-numeric: tabular-nums;
+    opacity: 1 !important;
+}
+
+/* pallino non letti: colore accento */
+#threadTree[rows="thread-card"] .card-layout[data-properties~="unread"],
+#threadTree[rows="thread-card"] .card-layout[data-properties~="unread"][data-properties~="new"] {
+    --read-status-icon: var(--icon-dot) !important;
+    --read-status-fill: var(--fm-accent) !important;
+    --read-status-stroke: var(--fm-accent) !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout[data-properties~="hasUnread"] button.twisty::before {
+    content: var(--icon-dot-xs) !important;
+    fill: var(--fm-accent) !important;
+    stroke: var(--fm-accent) !important;
+}
+
+tr[data-properties~="unread"] .tree-button-unread > img {
+    fill: var(--fm-accent) !important;
+    stroke: var(--fm-accent) !important;
+}
+
+/* stella: solo se contrassegnato o al passaggio del mouse */
+#threadTree[rows="thread-card"] .card-layout:not([data-properties~="flagged"]):not(:hover) .tree-button-flag {
+    opacity: 0 !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout[data-properties~="flagged"] .tree-button-flag {
+    fill: var(--fm-flag) !important;
+    stroke: var(--fm-flag) !important;
+}
+
+#threadTree[rows="thread-card"] .card-container :is(.attachment-icon, img.state) {
+    fill: var(--fm-text-3) !important;
+    stroke: var(--fm-text-3) !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout:not(:hover) .tree-button-more {
+    opacity: 0 !important;
+}
+
+#threadTree[rows="thread-card"]:focus-within .card-layout.selected .card-container
+    :is(img, .tree-button-flag, .tree-button-more, .twisty, .attachment-icon, .read-status) {
+    fill: #ffffff !important;
+    stroke: #ffffff !important;
+    color: #ffffff !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   4. Intestazione elenco e filtro rapido: piatti, senza scorciatoie
+   -------------------------------------------------------------------------- */
+
+#threadPaneHeaderBar {
+    background-color: var(--fm-content) !important;
+    border-block-end: none !important;
+    box-shadow: none !important;
+    padding-inline: 16px 10px !important;
+}
+
+#threadPaneFolderName {
+    font-family: var(--fm-font-display) !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em;
+    color: var(--fm-text) !important;
+}
+
+#threadPaneFolderCount {
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    color: var(--fm-text-2) !important;
+    background: none !important;
+    border: none !important;
+}
+
+#threadPaneHeaderBar button {
+    border-color: transparent !important;
+    background-color: transparent !important;
+    border-radius: var(--fm-radius-sm) !important;
+    box-shadow: none !important;
+    color: var(--fm-text-2) !important;
+    fill: var(--fm-text-2) !important;
+}
+
+#threadPaneHeaderBar button:hover {
+    background-color: var(--fm-hover) !important;
+}
+
+#quick-filter-bar {
+    background-color: var(--fm-content) !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 8px 12px 6px !important;
+    gap: 6px !important;
+    --search-bar-color: var(--fm-text);
+    --search-bar-background: var(--fm-field);
+    --search-bar-focus-background: var(--fm-field-focus);
+    --search-bar-border-color: transparent;
+    --search-field-placeholder: var(--fm-text-3);
+}
+
+#qfb-sticky,
+#qfb-inaddrbook {
+    display: none !important;
+}
+
+#qfb-qs-textbox {
+    flex: 1 1 auto !important;
+    min-block-size: 28px !important;
+    border: none !important;
+    border-radius: var(--fm-radius) !important;
+    font-size: 13px !important;
+}
+
+#quick-filter-bar :is(.button-group, [role="group"]) {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    gap: 2px !important;
+}
+
+#quick-filter-bar :is(button, .button) {
+    appearance: none !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: var(--fm-radius-sm) !important;
+    min-block-size: 28px !important;
+    min-inline-size: 28px !important;
+    margin: 0 !important;
+    color: var(--fm-text-2) !important;
+    fill: var(--fm-text-2) !important;
+}
+
+#quick-filter-bar :is(button, .button):hover {
+    background-color: var(--fm-hover) !important;
+}
+
+#quick-filter-bar :is(button, .button):is([aria-pressed="true"], [checked="true"]) {
+    background-color: color-mix(in srgb, var(--fm-accent) 16%, transparent) !important;
+    color: var(--fm-accent) !important;
+    fill: var(--fm-accent) !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   5. Barra in alto: stessa superficie della barra laterale
+   -------------------------------------------------------------------------- */
+
+#navigation-toolbox,
+#unifiedToolbarContainer,
+#tabs-toolbar,
+#titlebar {
+    background-color: var(--fm-chrome) !important;
+    background-image: none !important;
+    color: var(--fm-text) !important;
+    box-shadow: none !important;
+    border-block-end: none !important;
+}
+
+#unifiedToolbarContainer {
+    --button-background-color: transparent;
+    --button-background-color-hover: var(--fm-hover);
+    --button-hover-background-color: var(--fm-hover);
+    --button-background-color-active: var(--fm-side-selected);
+    --button-active-background-color: var(--fm-side-selected);
+    --button-border-color: transparent;
+    --button-text-color: var(--fm-text-2);
+    --button-hover-text-color: var(--fm-text);
+    --search-bar-color: var(--fm-text);
+    --search-bar-background: var(--fm-field);
+    --search-bar-focus-background: var(--fm-field-focus);
+    --search-bar-border-color: transparent;
+    --search-field-placeholder: var(--fm-text-3);
+}
+
+unified-toolbar {
+    border-block-end: none !important;
+    box-shadow: none !important;
+}
+
+.mail-toolbox {
+    box-shadow: none !important;
+    border-block-end: none !important;
+}
+
+#spacesToolbar {
+    background-color: var(--fm-chrome) !important;
+    border-inline-end: none !important;
+    --spaces-button-active-background-color: var(--fm-side-selected);
+    --spaces-button-active-text-color: var(--fm-accent);
+}
+
+
+/* --------------------------------------------------------------------------
+   6. Intestazione del messaggio: oggetto grande, pulsanti piatti
+   -------------------------------------------------------------------------- */
+
+#messageHeader {
+    background-color: var(--fm-content) !important;
+    border-block-end: 1px solid var(--fm-hairline) !important;
+    box-shadow: none !important;
+    color: var(--fm-text) !important;
+}
+
+#messageHeader #expandedsubjectBox,
+#messageHeader .message-header-subject {
+    font-family: var(--fm-font-display) !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.015em;
+    color: var(--fm-text) !important;
+}
+
+#expandedfromBox .recipient-single-line {
+    font-weight: 600 !important;
+    color: var(--fm-text) !important;
+}
+
+#header-view-toolbar toolbarbutton,
+#messageHeader .message-header-view-button {
+    appearance: none !important;
+    background-color: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: var(--fm-radius-sm) !important;
+    box-shadow: none !important;
+    color: var(--fm-text-2) !important;
+    fill: var(--fm-text-2) !important;
+}
+
+#header-view-toolbar toolbarbutton:hover,
+#messageHeader .message-header-view-button:hover {
+    background-color: var(--fm-hover) !important;
+    color: var(--fm-text) !important;
+    fill: var(--fm-text) !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   7. Campi di ricerca senza scorciatoie da tastiera ("CTRL + K")
+   -------------------------------------------------------------------------- */
+
+.kbd-container {
+    font-size: 0 !important;
+}
+
+.kbd-container kbd {
+    display: none !important;
+}
+
+[data-l10n-id="search-bar-placeholder-with-key"]::before {
+    content: "Cerca";
+    font-size: 13px;
+}
+
+[data-l10n-id="quick-filter-bar-search-placeholder-with-key"]::before {
+    content: "Filtra messaggi";
+    font-size: 13px;
+}
+
+#unifiedToolbarContainer global-search-bar,
+#qfb-qs-textbox {
+    --search-bar-border-radius: var(--fm-radius);
+}
+
+/* intestazione del messaggio: più respiro */
+#messageHeader {
+    padding: 12px 20px 12px !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   8. Rifiniture dalla revisione di design
+   -------------------------------------------------------------------------- */
+
+/* letti: mittente nel colore pieno ma peso normale, così l'elenco non sembra
+   "spento"; non letti: 700. La differenza resta tutta nel peso. */
+#threadTree[rows="thread-card"] .card-layout {
+    --fm-c-sender: var(--fm-text);
+}
+
+/* pulsanti del messaggio: solo icone, indirizzi senza icona rubrica */
+#header-view-toolbar .toolbarbutton-text {
+    display: none !important;
+}
+
+#header-view-toolbar toolbarbutton {
+    min-inline-size: 30px !important;
+    padding: 4px 6px !important;
+}
+
+#messageHeader .recipients-list button {
+    opacity: 0 !important;
+}
+
+#messageHeader .recipients-list li:hover button,
+#messageHeader .recipients-list button:focus-visible {
+    opacity: 1 !important;
+}
+
+/* ricerca compatta a destra */
+#unifiedToolbarContainer global-search-bar {
+    display: block !important;
+    max-inline-size: 320px !important;
+    margin-inline-start: auto !important;
+}
+
+/* un solo pulsante Filtro veloce (quello in alto), senza barretta */
+#threadPaneQuickFilterButton {
+    display: none !important;
+}
+
+#unifiedToolbarContainer .check-button::before,
+#quick-filter-bar .check-button::before {
+    display: none !important;
+}
+
+#unifiedToolbarContainer .check-button[aria-pressed="true"] {
+    border-color: transparent !important;
+    background-color: color-mix(in srgb, var(--fm-accent) 16%, transparent) !important;
+    color: var(--fm-accent) !important;
+    fill: var(--fm-accent) !important;
+}
+
+/* gerarchia dell'intestazione del messaggio */
+#messageHeader {
+    padding-inline: 24px !important;
+}
+
+#messageHeader #expandedsubjectBox,
+#messageHeader .message-header-subject {
+    font-size: 18px !important;
+    font-weight: 650 !important;
+}
+
+#messageHeader :is(#fromHeading, #toHeading, #ccHeading, #bccHeading) {
+    font-weight: 400 !important;
+    opacity: 1 !important;
+    color: var(--fm-text-3) !important;
+}
+
+#messageHeader .recipients-list .recipient-single-line {
+    color: var(--fm-text-2) !important;
+    font-size: 12px !important;
+}
+
+#expandedfromBox .recipients-list .recipient-single-line {
+    color: var(--fm-text) !important;
+    font-size: 14px !important;
+}
+
+/* barra laterale: titoli di sezione senza spazio vuoto, contatori come numeri */
+#folderTree .mode-container {
+    position: relative !important;
+    padding-block: 18px 2px !important;
+}
+
+#folderTree .mode-container button {
+    position: absolute !important;
+    inset-inline-end: 10px;
+    inset-block-end: -2px;
+}
+
+#folderTree .unread-count,
+#folderTree li.selected > .container > .unread-count {
+    background: none !important;
+    color: var(--fm-text-3) !important;
+    font-weight: 500 !important;
+}
+
+#folderTree li.selected > .container > .unread-count {
+    color: var(--fm-accent) !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   9. Elenco messaggi su 3 righe: mittente e data, poi oggetto su 2 righe
+      (come l'anteprima di Apple Mail). Icone a destra dell'oggetto.
+   -------------------------------------------------------------------------- */
+
+#threadTree[rows="thread-card"] {
+    padding-block: 6px !important;
+}
+
+#threadTree[rows="thread-card"] tbody > .card-layout > td {
+    padding-inline-end: 10px !important;
+}
+
+#threadTree[rows="thread-card"] tbody > .card-layout:not([data-properties~="thread-children"]) > td {
+    padding-inline-start: 10px !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout > td > .card-container {
+    border-radius: 12px !important;
+    padding-block: 6px !important;
+    padding-inline-start: 6px !important;
+    padding-inline-end: calc(14px + env(scrollbar-inline-size)) !important;
+    align-content: center !important;
+    background-position: left 26px bottom 0 !important;
+    background-size: calc(100% - 38px) 1px !important;
+}
+
+#threadTree[rows="thread-card"] .card-container .thread-card-row,
+#threadTree[rows="thread-card"] .card-container .thread-card-dynamic-row {
+    line-height: 1.4 !important;
+}
+
+#threadTree[rows="thread-card"] .card-container .thread-card-column:not(.read-status-column) {
+    gap: 4px !important;
+}
+
+/* oggetto e icone sulla stessa riga; l'oggetto può andare a capo una volta */
+#threadTree[rows="thread-card"] .card-layout:not([data-properties~="dummy"]) .card-container .thread-card-dynamic-row {
+    grid-template: "button subject info" auto / auto minmax(0, 1fr) auto !important;
+    align-items: start !important;
+    column-gap: 0 !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout:not([data-properties~="dummy"]) .card-container .thread-card-subject-container {
+    padding-inline-start: 0 !important;
+    min-inline-size: 0 !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout:not([data-properties~="dummy"]) .card-container .subject {
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    white-space: normal !important;
+    overflow: hidden !important;
+    font-size: 13.5px !important;
+}
+
+#threadTree[rows="thread-card"] .card-layout:not([data-properties~="dummy"]) .card-container .thread-card-icon-info {
+    padding-inline-start: 8px !important;
+}
+
+#threadTree[rows="thread-card"] .card-container .sender {
+    padding-inline-start: 0 !important;
+    font-size: 15px !important;
+}
+
+/* pallino non letti allineato al mittente */
+#threadTree[rows="thread-card"] .card-container .read-status-column {
+    overflow: visible !important;
+    padding-block-start: calc(var(--thread-pane-container-gap, 3px) + 2px) !important;
+}
+
+#threadTree[rows="thread-card"] .card-container .read-status {
+    overflow: visible !important;
+    flex: none !important;
+    margin-inline-end: 4px !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   10. Filtro rapido: campo pieno arrotondato e icone piatte, senza barrette
+   -------------------------------------------------------------------------- */
+
+#quick-filter-bar,
+#quickFilterBarContainer {
+    background-color: var(--fm-content) !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#quickFilterBarContainer {
+    padding: 8px 12px 6px !important;
+    gap: 6px !important;
+}
+
+#quick-filter-bar :is(.check-button, button) {
+    --button-pressed-indicator-padding: 0px;
+}
+
+#quick-filter-bar .check-button::before,
+#unifiedToolbarContainer .check-button::before {
+    display: none !important;
+}
+
+#quick-filter-bar .button-group {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    gap: 2px !important;
+    padding: 0 !important;
+}
+
+#quick-filter-bar .button-group > button {
+    border: none !important;
+    border-radius: var(--fm-radius-sm) !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+#quick-filter-bar .button-group > button:hover {
+    background-color: var(--fm-hover) !important;
+}
+
+#quick-filter-bar .button-group > button[aria-pressed="true"] {
+    background-color: color-mix(in srgb, var(--fm-accent) 18%, transparent) !important;
+    color: var(--fm-accent) !important;
+    fill: var(--fm-accent) !important;
+}
+
+#qfb-qs-textbox {
+    --search-bar-border-color: transparent;
+    --search-bar-background: var(--fm-field);
+    --search-bar-focus-background: var(--fm-field-focus);
+}
+
+
+/* --------------------------------------------------------------------------
+   11. Intestazione del messaggio con lo stesso carattere del tema
+   -------------------------------------------------------------------------- */
+
+#messageHeader,
+#messageHeader * {
+    font-family: var(--fm-font) !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   9. Unified Folders
+      Hide the "Unified Folders" title and the account rows (with their
+      non-standard folders, which All Folders already shows). Templates, Sent,
+      Archives, Spam and Trash get no unread count and are never bold.
+   -------------------------------------------------------------------------- */
+
+/* :not([hidden]) leaves Thunderbird's own hiding logic untouched */
+li[data-mode="smart"] > .mode-container:not([hidden]) {
+    display: none !important;
+}
+
+/* account rows (Pessoal > Later, iCloud > Later, ...) duplicate All Folders */
+li[data-mode="smart"] > ul > li[data-server-type] {
+    display: none !important;
+}
+
+li[data-mode="smart"] > ul > li[data-folder-type="templates"] > .container > .unread-count,
+li[data-mode="smart"] > ul > li[data-folder-type="sent"] > .container > .unread-count,
+li[data-mode="smart"] > ul > li[data-folder-type="archive"] > .container > .unread-count,
+li[data-mode="smart"] > ul > li[data-folder-type="junk"] > .container > .unread-count,
+li[data-mode="smart"] > ul > li[data-folder-type="trash"] > .container > .unread-count {
+    display: none !important;
+}
+
+li[data-mode="smart"] > ul > li[data-folder-type="templates"] > .container > .name,
+li[data-mode="smart"] > ul > li[data-folder-type="sent"] > .container > .name,
+li[data-mode="smart"] > ul > li[data-folder-type="archive"] > .container > .name,
+li[data-mode="smart"] > ul > li[data-folder-type="junk"] > .container > .name,
+li[data-mode="smart"] > ul > li[data-folder-type="trash"] > .container > .name {
+    font-weight: normal !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   10. "All Folders" pinned to the bottom of the pane
+   -------------------------------------------------------------------------- */
+
+/* the tree fills the whole pane height (it used to be only as tall as its content) */
+#folderTree {
+    flex: 1 1 auto !important;
+    min-block-size: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* sections don't shrink: if space runs out, the tree scrolls as usual */
+#folderTree > li[data-mode] {
+    flex: 0 0 auto !important;
+}
+
+/* an auto margin pushes "All Folders" to the floor */
+#folderTree > li[data-mode="all"] {
+    margin-block-start: auto !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   11. Message header: "From Name" on a single line, without the avatar
+       Works regardless of the "Show recipient avatar" and "Show sender full
+       address" options in Customize Header.
+   -------------------------------------------------------------------------- */
+
+/* no avatar */
+#expandedfromBox .recipient-avatar {
+    display: none !important;
+}
+
+/* single line, instead of the name stacked over the address. Whether it shows
+   the name only or "Name <address>" is Thunderbird's own setting
+   (mail.showCondensedAddresses) */
+#expandedfromBox .recipient-multi-line {
+    display: none !important;
+}
+
+#expandedfromBox .recipient-single-line {
+    display: inline !important;
+}
+
+/* the old "From" label of the row is hidden; the heading below replaces it */
+#expandedfromLabel {
+    display: none !important;
+}
+
+/* show the "From" heading (Thunderbird hides #fromHeading by default), in the
+   same style as the "To" and "Cc" headings */
+#expandedfromBox {
+    display: flex !important;
+    align-items: baseline !important;
+}
+
+#expandedfromBox > #fromHeading {
+    display: block !important;
+    flex: none !important;
+    margin-inline-end: 1ch !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    opacity: var(--message-header-label-opacity, 0.7) !important;
+}
+
+#expandedfromBox > .recipients-list {
+    flex: 1 1 auto !important;
+}
+
+/* Align the names in a column:
+     From  Name
+     To    Name
+   Every heading gets the same minimum width. This relies on Customize Header >
+   "Hide labels column" being on (Thunderbird's default), which is what makes
+   the To/Cc/Bcc headings show inline. */
+#messageHeader :is(#fromHeading, #toHeading, #ccHeading, #bccHeading) {
+    min-inline-size: 5ch !important;
+}
+
+
+/* --------------------------------------------------------------------------
+   12. Calendar views (Day / Week / Multiweek / Month)
+       Accent color = --spark-blue; lines stay thin and light. Events are
+       translucent with a strong left bar; the "today" column is a faint wash.
+   -------------------------------------------------------------------------- */
+
+#calendarContent {
+    --selected-item-color: var(--spark-blue);
+    --selected-item-text-color: #ffffff;
+
+    --viewTodayLabelBackground: var(--spark-blue);
+    --viewTodayLabelColor: #ffffff;
+    --viewTodayDayLabelBackground: color-mix(in srgb, var(--spark-blue) 14%, transparent);
+    --viewDayLabelSelectedBackground: var(--spark-blue);
+    --viewDragboxBackground: var(--spark-blue);
+    --viewDropshadowBackground: var(--spark-blue);
+    --viewHighlightBorderColor: color-mix(in srgb, var(--spark-blue) 25%, transparent);
+
+    /* subtle "today" / selected column: a faint blue wash instead of a strong fill */
+    --viewTodayBackground: color-mix(in srgb, var(--spark-blue) 5%, var(--viewBackground));
+    --viewTodayOffBackground: color-mix(in srgb, var(--viewTodayBackground) 95%, black);
+    --viewDayBoxSelectedBackground: var(--viewTodayBackground);
+    --viewDayBoxOffSelectedBackground: var(--viewTodayOffBackground);
+}
+
+/* today's heading (Day / Week): thin blue rule under it */
+#calendarContent .multiday-grid:not(.multiday-grid-rotated) .day-column-today .day-column-heading {
+    box-shadow: inset 0 -2px 0 var(--spark-blue);
+}
+
+/* Events: translucent tint of the calendar color, dark text, and a stronger
+   bar on the left. Selected events keep Thunderbird's own look. */
+#calendarContent :is(calendar-event-box, calendar-month-day-box-item).calendar-color-box:not([selected="true"]) {
+    background-color: color-mix(in srgb, var(--item-backcolor) 22%, transparent) !important;
+    color: var(--viewColor) !important;
+    border-radius: 3px;
+    box-shadow: inset 3px 0 0 var(--item-backcolor) !important;
+}
+
+#calendarContent .calendar-color-box:not([selected="true"]) .event-name-label {
+    font-weight: 500;
+}
+
+/* Overlapping events (Day / Week): instead of splitting the column into narrow
+   side-by-side strips, stack them as a cascade. Every card runs to the right
+   edge and later ones sit on top, shifted right by a small step.
+   Thunderbird sets width and inset-inline-start inline as % of the column
+   (0%, 33.3%, 50%, ...), so the width is dropped and the offsets are remapped
+   to fixed steps by matching the inline style. Unmatched offsets fall back to
+   their own %, so nothing breaks, it just looks less tidy.
+   Events that start at (almost) the same time, so that a later one would land
+   on the earlier one's text (marked data-same-start by the optional
+   calendar-ui-fixes extension), are left out and keep Thunderbird's own
+   side-by-side split. */
+#calendarContent .multiday-grid:not(.multiday-grid-rotated) calendar-event-column .multiday-event-listitem:not([data-same-start]) {
+    --overlap-step: 14px;
+    width: auto !important;
+    inset-inline-end: 0 !important;
+}
+
+#calendarContent .multiday-grid:not(.multiday-grid-rotated) calendar-event-column .multiday-event-listitem:not([data-same-start]) {
+    &[style*="inset-inline-start: 20%"],
+    &[style*="inset-inline-start: 25%"],
+    &[style*="inset-inline-start: 33."] {
+        inset-inline-start: var(--overlap-step) !important;
+    }
+    &[style*="inset-inline-start: 50%"] {
+        inset-inline-start: calc(var(--overlap-step) * 1.7) !important;
+    }
+    &[style*="inset-inline-start: 40%"],
+    &[style*="inset-inline-start: 66."] {
+        inset-inline-start: calc(var(--overlap-step) * 2) !important;
+    }
+    &[style*="inset-inline-start: 60%"],
+    &[style*="inset-inline-start: 75%"] {
+        inset-inline-start: calc(var(--overlap-step) * 3) !important;
+    }
+    &[style*="inset-inline-start: 80%"] {
+        inset-inline-start: calc(var(--overlap-step) * 4) !important;
+    }
+}
+
+/* Event time (Day / Week), added by the optional calendar-ui-fixes extension:
+   "14:00 – 18:00" in a muted color above the title. On short cards it sits on
+   the same line as the title instead. */
+#calendarContent calendar-event-box .calendar-item-container {
+    display: flex !important;
+    flex-direction: column;
+}
+
+#calendarContent calendar-event-box .ui-fixes-time {
+    flex: 0 0 auto;
+    padding: 4px 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: color-mix(in srgb, currentColor 62%, transparent);
+}
+
+#calendarContent calendar-event-box .ui-fixes-time:empty {
+    display: none;
+}
+
+#calendarContent calendar-event-box .ui-fixes-time + .calendar-item-flex {
+    padding-block-start: 1px;
+}
+
+#calendarContent calendar-event-box .calendar-item-container[data-short] {
+    flex-direction: row;
+    align-items: baseline;
+}
+
+#calendarContent calendar-event-box .calendar-item-container[data-short] .ui-fixes-time {
+    padding-block-end: 4px;
+}
+
+#calendarContent calendar-event-box .calendar-item-container[data-short] .ui-fixes-time + .calendar-item-flex {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    padding-block-start: 4px;
+    padding-inline-start: 0;
+}
+
+/* "Now" line: a darker blue, drawn across the whole week (the extension repeats
+   Thunderbird's bar, which only exists in today's column, in the other columns).
+   Without the extension it is simply blue and only in today's column. */
+#calendarContent {
+    --now-line-color: color-mix(in srgb, var(--spark-blue) 70%, black);
+}
+
+#calendarContent .multiday-grid:not(.multiday-grid-rotated) .timeIndicator {
+    opacity: 1 !important;
+    border-block-start: 2px solid var(--now-line-color) !important;
+}
+
+#calendarContent .multiday-timebar-now-indicator {
+    border-color: var(--now-line-color) !important;
+}
+
+/* Titles of cards that a later event starts on top of: the extension works out
+   how many lines fit above that event (--title-lines) and the title is cut there
+   with an ellipsis, so the two texts never run into each other. */
+#calendarContent calendar-event-box[data-clamp] .event-name-label {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--title-lines);
+    overflow: hidden;
+}

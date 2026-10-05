@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+releases/
+deployment*.json
+test-results*/

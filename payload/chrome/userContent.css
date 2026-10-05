@@ -1,0 +1,11 @@
+/* Risultati della ricerca globale: stessi controlli e font dell'interfaccia. */
+@import "search-modern.css";
+@import "compose-editor-view.css";
+
+/* Testo dei messaggi: margini e interlinea più ariosi */
+@-moz-document url-prefix("imap:"), url-prefix("mailbox:"), url-prefix("news:") {
+    body {
+        margin: 18px 24px !important;
+        line-height: 1.45 !important;
+    }
+}

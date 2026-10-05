@@ -1,0 +1,37 @@
+/* Solo il documento interno del compositore, non i messaggi letti o inviati.
+   CSS utente: non viene inserito nel markup o nella bozza. Nessuna regola su
+   font, dimensioni, colori del testo, firma o formattazione dell'email. */
+@-moz-document url("about:blank?compose") {
+  @media (forced-colors: none) {
+    :root {
+      color-scheme: light dark !important;
+      scrollbar-color: light-dark(#b1b1b7, #636369) transparent !important;
+      scrollbar-width: thin;
+    }
+
+    body {
+      margin: 18px 22px !important;
+    }
+
+    /* editorContent.css disegna in rosso le tabelle senza bordo. Nelle
+       citazioni le guide scompaiono; nelle tabelle create dall'utente restano
+       neutre. Non annullare i bordi reali né quelli di selezione delle celle. */
+    table:is([empty-cells], [border="0"], :not([border])),
+    table:is([border="0"], :not([border])) > tr > :is(td, th),
+    table:is([border="0"], :not([border])) > :is(thead, tbody, tfoot) > tr > :is(td, th) {
+      border-color: light-dark(#c7c7cc, #48484d);
+    }
+
+    blockquote[type="cite"] table:is([empty-cells], [border="0"], :not([border])),
+    blockquote[type="cite"] table:is([border="0"], :not([border])) > tr > :is(td, th),
+    blockquote[type="cite"] table:is([border="0"], :not([border])) > :is(thead, tbody, tfoot) > tr > :is(td, th) {
+      border-color: transparent;
+    }
+
+    @media (max-width: 680px) {
+      body {
+        margin-inline: 14px !important;
+      }
+    }
+  }
+}
