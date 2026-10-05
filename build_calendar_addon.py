@@ -19,10 +19,16 @@ def build(destination):
     json.loads((CALENDAR / 'schema.json').read_text())
     destination.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED) as archive:
+        def add(name, data):
+            info = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o644 << 16
+            archive.writestr(info, data)
+
         for path in sorted(p for p in THEME.rglob('*') if p.is_file()):
-            archive.write(path, path.relative_to(THEME).as_posix())
-        archive.writestr('calendar-assist/schema.json', (CALENDAR / 'schema.json').read_bytes())
-        archive.writestr('calendar-assist/experiment.js', experiment)
+            add(path.relative_to(THEME).as_posix(), path.read_bytes())
+        add('calendar-assist/schema.json', (CALENDAR / 'schema.json').read_bytes())
+        add('calendar-assist/experiment.js', experiment)
     return manifest['version']
 
 

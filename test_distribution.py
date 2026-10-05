@@ -17,6 +17,9 @@ class DistributionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             package = Path(directory) / 'theme.xpi'
             self.assertEqual(build_calendar_addon.build(package), '1.0.1')
+            first = package.read_bytes()
+            build_calendar_addon.build(package)
+            self.assertEqual(package.read_bytes(), first)
             with zipfile.ZipFile(package) as zipped:
                 manifest = json.loads(zipped.read('manifest.json'))
                 self.assertEqual(manifest['browser_specific_settings']['gecko']['id'], 'fede-day-night@local')
