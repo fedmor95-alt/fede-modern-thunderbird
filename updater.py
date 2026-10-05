@@ -55,6 +55,9 @@ def atomic(path, data):
 def safe_target(profile, rel):
     if rel not in ALLOWED | {'user.js', STATE}:
         raise ValueError('File fuori elenco consentito: ' + rel)
+    # macOS /var is a system alias for /private/var. Canonicalize the
+    # explicitly selected profile, while still rejecting links inside it.
+    profile = profile.resolve(strict=True)
     target = profile / rel
     if not target.resolve().is_relative_to(profile.resolve()) or any(p.is_symlink() for p in [target, *target.parents] if p != profile):
         raise ValueError('Link simbolico non consentito: ' + rel)

@@ -78,6 +78,12 @@ class InstallerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Link simbolico'):
             updater.install(self.archive, self.profile)
 
+    def test_profile_below_system_directory_alias_is_supported(self):
+        alias = self.base / 'system-alias'
+        alias.symlink_to(self.base, target_is_directory=True)
+        target = updater.safe_target(alias / 'profile', 'chrome/userChrome.css')
+        self.assertEqual(target, self.profile.resolve() / 'chrome/userChrome.css')
+
     def test_unknown_archive_entries_rejected(self):
         with zipfile.ZipFile(self.archive, 'a') as z:
             z.writestr('payload/../../prefs.js', 'bad')
