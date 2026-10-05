@@ -1,5 +1,9 @@
 # Fede Modern — pacchetto personalizzazioni desktop
 
+[Scarica l’ultima release per Linux o macOS beta](https://github.com/fedmor95-alt/fede-modern-thunderbird/releases/latest).
+
+Canale condiviso: `https://github.com/fedmor95-alt/fede-modern-thunderbird/releases/latest/download/stable.json`.
+
 Pacchetto indipendente, non un fork né una distribuzione ufficiale Thunderbird.
 Release 1.0.8: canale pubblico degli aggiornamenti e pubblicazione automatica.
 Include il calendario e l'editor eventi della 1.0.7; contatori
@@ -137,7 +141,7 @@ configurazioni personali, gli account o credenziali. Il builder usa un elenco
 chiuso di file e non legge il profilo.
 
 Esempio di canale comune, da usare solo dopo che gli asset esistono realmente:
-`https://github.com/OWNER/REPO/releases/latest/download/stable.json`.
+`https://github.com/fedmor95-alt/fede-modern-thunderbird/releases/latest/download/stable.json`.
 Esegui `python3 setup.py --profile PERCORSO --channel URL --enable` su ciascuna
 macchina. Pubblica insieme manifest e archivio di ogni nuova release stabile:
 ogni macchina scaricherà le stesse personalizzazioni a Thunderbird chiuso,
