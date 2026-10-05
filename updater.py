@@ -25,7 +25,7 @@ ALLOWED = frozenset({
     'chrome/themes/fede-modern/userChrome.css', 'chrome/compose-modern.css',
     'chrome/themes/fede-modern/LICENSE',
     'chrome/compose-editor-view.css', 'chrome/search-modern.css',
-    'chrome/interface-refinements.css',
+    'chrome/interface-refinements.css', 'chrome/calendar-modern.css',
     'extensions/snooze@contextlab.github.io.xpi',
     'extensions/fede-day-night@local.xpi',
 })
@@ -82,7 +82,7 @@ def read_release(archive):
 
 def running():
     # Conservative: do not change any profile while a Thunderbird process runs.
-    return subprocess.run(['pgrep', '-x', 'thunderbird'], stdout=subprocess.DEVNULL).returncode == 0
+    return subprocess.run(['pgrep', '-ix', 'thunderbird'], stdout=subprocess.DEVNULL).returncode == 0
 
 
 def profile_version(profile):
@@ -261,7 +261,7 @@ def main():
             result = sync(args.config)
         else:
             result = []
-            for base in [Path.home() / '.thunderbird', Path.home() / '.var/app/org.mozilla.Thunderbird/.thunderbird']:
+            for base in [Path.home() / '.thunderbird', Path.home() / '.var/app/org.mozilla.Thunderbird/.thunderbird', Path.home() / 'Library/Thunderbird']:
                 ini = configparser.ConfigParser()
                 ini.read(base / 'profiles.ini')
                 for section in ini.sections():

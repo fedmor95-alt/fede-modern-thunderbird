@@ -1,4 +1,8 @@
 /* One search entry, native filter criteria, consistent keyboard focus. */
+/* Unified accounts show Thunderbird's live unread counter, never total mail. */
+#folderTree > li[data-mode="smart"] .total-count {
+  display: none !important;
+}
 /* Sidebar v1.0.6: native unified view, secondary account disclosure. */
 :root[data-fm-compose-primary="true"] #folderPaneWriteMessage {
   display: none !important;

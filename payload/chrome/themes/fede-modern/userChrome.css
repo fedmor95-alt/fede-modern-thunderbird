@@ -1092,44 +1092,7 @@ li[data-mode="smart"] > ul > li[data-folder-type="trash"] > .container > .name {
     font-weight: 500;
 }
 
-/* Overlapping events (Day / Week): instead of splitting the column into narrow
-   side-by-side strips, stack them as a cascade. Every card runs to the right
-   edge and later ones sit on top, shifted right by a small step.
-   Thunderbird sets width and inset-inline-start inline as % of the column
-   (0%, 33.3%, 50%, ...), so the width is dropped and the offsets are remapped
-   to fixed steps by matching the inline style. Unmatched offsets fall back to
-   their own %, so nothing breaks, it just looks less tidy.
-   Events that start at (almost) the same time, so that a later one would land
-   on the earlier one's text (marked data-same-start by the optional
-   calendar-ui-fixes extension), are left out and keep Thunderbird's own
-   side-by-side split. */
-#calendarContent .multiday-grid:not(.multiday-grid-rotated) calendar-event-column .multiday-event-listitem:not([data-same-start]) {
-    --overlap-step: 14px;
-    width: auto !important;
-    inset-inline-end: 0 !important;
-}
-
-#calendarContent .multiday-grid:not(.multiday-grid-rotated) calendar-event-column .multiday-event-listitem:not([data-same-start]) {
-    &[style*="inset-inline-start: 20%"],
-    &[style*="inset-inline-start: 25%"],
-    &[style*="inset-inline-start: 33."] {
-        inset-inline-start: var(--overlap-step) !important;
-    }
-    &[style*="inset-inline-start: 50%"] {
-        inset-inline-start: calc(var(--overlap-step) * 1.7) !important;
-    }
-    &[style*="inset-inline-start: 40%"],
-    &[style*="inset-inline-start: 66."] {
-        inset-inline-start: calc(var(--overlap-step) * 2) !important;
-    }
-    &[style*="inset-inline-start: 60%"],
-    &[style*="inset-inline-start: 75%"] {
-        inset-inline-start: calc(var(--overlap-step) * 3) !important;
-    }
-    &[style*="inset-inline-start: 80%"] {
-        inset-inline-start: calc(var(--overlap-step) * 4) !important;
-    }
-}
+/* Overlapping events retain native side-by-side geometry and drag targets. */
 
 /* Event time (Day / Week), added by the optional calendar-ui-fixes extension:
    "14:00 – 18:00" in a muted color above the title. On short cards it sits on

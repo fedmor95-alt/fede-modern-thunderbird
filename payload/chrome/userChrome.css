@@ -6,6 +6,7 @@
 @import "compose-modern.css";
 @import "search-modern.css";
 @import "interface-refinements.css";
+@import "calendar-modern.css";
 
 /* Nessun contatore in basso, nella sezione Tutte le cartelle.
    Restano visibili i non letti nelle cartelle unificate in alto. */

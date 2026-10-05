@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent
 def build(version, destination):
     payload = {name: (ROOT / 'payload' / name).read_bytes() for name in sorted(ALLOWED)}
     manifest = {'product': 'fede-modern', 'version': version,
-                'compatibility': {'min_major': 156, 'max_major': 156},
+                'compatibility': {'min_major': 156, 'max_major': 157},
                 'files': {name: hashlib.sha256(data).hexdigest() for name, data in payload.items()}}
     destination.mkdir(parents=True, exist_ok=True)
     output = destination / ('fede-modern-' + version + '.zip')

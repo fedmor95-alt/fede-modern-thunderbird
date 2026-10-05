@@ -1,0 +1,216 @@
+/* Fede Modern calendar · native views, hit targets, DnD and commands unchanged.
+   The shared mail tokens supply both palettes; no calendar data is rewritten. */
+@media not (forced-colors: active) {
+  #calendarContent {
+    --viewColor: var(--fm-text);
+    --viewBackground: var(--fm-content);
+    --viewBorderColor: var(--fm-hairline);
+    --viewTimeBoxColor: var(--fm-text-2);
+    --viewWeekendBackground: color-mix(in srgb, var(--fm-chrome) 32%, var(--fm-content));
+    --viewMonthOtherBackground: var(--fm-chrome);
+    --viewMonthDayOtherBackground: color-mix(in srgb, var(--fm-chrome) 45%, var(--fm-content));
+    --viewOffTimeBackground: color-mix(in srgb, var(--fm-chrome) 25%, var(--fm-content));
+    --viewTodayBackground: color-mix(in srgb, var(--fm-accent) 4%, var(--fm-content));
+    --viewDayBoxSelectedBackground: var(--viewTodayBackground);
+    --viewDayBoxOtherSelectedBackground: var(--viewTodayBackground);
+    --viewMonthDayBoxLabelColor: var(--fm-text);
+    --viewMonthDayBoxSelectedColor: var(--fm-accent);
+    --viewMonthWeekLabelBackground: transparent;
+    --viewCalendarHeaderBackground: var(--fm-content);
+    --calendar-month-day-box-padding: 7px;
+    --calendar-view-toggle-background: var(--fm-field);
+    --calendar-view-toggle-selected-background: var(--fm-content);
+    --calendar-view-toggle-selected-hover-background: var(--fm-content);
+    --calendar-view-toggle-hover-background: var(--fm-hover);
+    --calendar-view-toggle-active-background: var(--fm-side-selected);
+    --calendar-view-toggle-shadow-color: rgba(0,0,0,.1);
+    background: var(--fm-content) !important;
+    color: var(--fm-text) !important;
+  }
+  #calSidebar {
+    background: var(--fm-chrome) !important;
+    color: var(--fm-text) !important;
+    min-inline-size: 245px !important;
+    border-inline-end: 1px solid var(--fm-hairline) !important;
+  }
+  #calSidebar #primaryButtonSidePanel {
+    padding: 16px 18px 10px !important;
+    justify-content: stretch !important;
+  }
+  #calSidebar #sidePanelNewEvent, #calSidebar #sidePanelNewTask {
+    flex: 1;
+    min-block-size: 36px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    background-color: var(--fm-accent) !important;
+    color: white !important;
+  }
+  #minimonth-pane { padding: 8px 12px 12px !important; }
+  #calMinimonth {
+    --mmBoxBackground: transparent;
+    --mmBoxItemPadding: 0;
+    --mmBoxItemColor: transparent;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--fm-text) !important;
+  }
+  #calMinimonth .minimonth-month-box { background: transparent !important; }
+  #calMinimonth .minimonth-header { display: flex !important; justify-content: center; gap: 2px; }
+  #calMinimonth .minimonth-nav-section { background: transparent !important; margin: 0 !important; }
+  #calMinimonth .minimonth-nav-btn { min-inline-size: 20px !important; inline-size: 20px !important; }
+  #calMinimonth .minimonth-month-name { inline-size: 7ch !important; font-size: 12px !important; }
+  #calMinimonth .minimonth-year-name { inline-size: 4.5ch !important; font-size: 12px !important; }
+  #calMinimonth .minimonth-day {
+    border-radius: 6px !important;
+    font-size: 12px !important;
+  }
+  #calMinimonth .minimonth-day[selected="true"] {
+    background: var(--fm-accent) !important;
+    color: white !important;
+    border-color: transparent !important;
+  }
+  #calendarListHeader {
+    padding: 10px 12px !important;
+    margin: 0 8px 4px !important;
+    color: var(--fm-text-2) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+  }
+  #calendar-list { margin: 0 10px !important; }
+  #calendar-list > li {
+    min-block-size: 34px !important;
+    padding-inline: 10px !important;
+    border-radius: 7px !important;
+    color: var(--fm-text) !important;
+  }
+  #calendar-list > li[selected] { background: var(--fm-side-selected) !important; }
+  #calendar-list .calendar-name { font-weight: 500 !important; }
+  #calendar-list .calendar-color { border-radius: 50% !important; }
+  #sideButtonsBottom { padding: 10px !important; gap: 6px !important; }
+  #calendarViewHeader {
+    flex-wrap: wrap !important;
+    gap: 10px 18px !important;
+    padding: 18px 20px 16px !important;
+    background: var(--fm-content) !important;
+    border-block-end: 1px solid var(--fm-hairline) !important;
+  }
+  #calendarViewHeader .navigation-inner-box {
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    min-inline-size: 0 !important;
+  }
+  #intervalDescription {
+    order: -1;
+    font-family: var(--fm-font-display) !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    letter-spacing: -.4px !important;
+    min-inline-size: 170px !important;
+  }
+  #calendarWeek { font-size: 11px !important; font-weight: 500 !important; color: var(--fm-text-2) !important; }
+  #calendarControls .button {
+    min-block-size: 32px !important;
+    min-inline-size: 32px !important;
+    border: 0 !important;
+    border-radius: 7px !important;
+    background-color: var(--fm-field) !important;
+    color: var(--fm-text) !important;
+  }
+  #calendarControls #todayViewButton {
+    background-image: none !important;
+    padding-inline: 10px !important;
+    inline-size: 58px !important;
+    min-inline-size: 58px !important;
+    overflow: visible !important;
+  }
+  #calendarControls .button-group { gap: 3px !important; background: transparent !important; border: 0 !important; }
+  #calendarControls .button-group::before, #calendarControls .button-group::after { content: none !important; }
+  #todayViewButton::after { content: "Oggi"; font: 500 12px var(--fm-font); }
+  #viewToggle { border-radius: 9px !important; box-shadow: none !important; padding: 2px !important; }
+  #viewToggle .calview-toggle-item {
+    border-radius: 7px !important;
+    min-block-size: 30px !important;
+    padding: 4px 11px !important;
+    margin: 0 !important;
+    font: 500 12px var(--fm-font) !important;
+  }
+  #viewToggle .calview-toggle-item[aria-selected="true"] { font-weight: 600 !important; }
+  #calendarContent .day-column-heading {
+    padding-block: 11px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+  }
+  #calendarContent .day-column-today .day-column-heading { font-weight: 700 !important; }
+  #calendarContent .multiday-timebar-time { font-size: 11px !important; }
+  #calendarContent :is(calendar-event-box, calendar-month-day-box-item).calendar-color-box:not([selected="true"]) {
+    border-radius: 5px !important;
+    background-color: color-mix(in srgb, var(--item-backcolor) 14%, var(--fm-content)) !important;
+    color: var(--fm-text) !important;
+    box-shadow: inset 3px 0 0 var(--item-backcolor) !important;
+  }
+  #calendarContent .calendar-color-box .event-name-label { font-size: 12px !important; font-weight: 500 !important; }
+  #calendarContent .calendar-month-day-box-date-label { font-size: 13px !important; font-weight: 500 !important; }
+  #calendarContent .calendar-month-day-box-list-item { margin: 3px 5px !important; }
+  #calendarContent .calendar-month-day-box-week-label { font-weight: 400 !important; color: var(--fm-text-2) !important; }
+  #unifinder-searchBox { padding: 10px 14px !important; background: var(--fm-chrome) !important; }
+  #unifinder-search-field { border-radius: 8px !important; min-block-size: 32px !important; }
+  #calendarContent :is(button,input):focus-visible {
+    outline: 2px solid var(--fm-accent) !important;
+    outline-offset: 2px !important;
+  }
+  /* Event editor: same surfaces and input language as the mail composer.
+     Do not hide invitations, recurrence, reminders or the native menu. */
+  #calendar-event-window, #calendar-event-dialog-inner {
+    background: var(--fm-content) !important;
+    color: var(--fm-text) !important;
+    font-family: var(--fm-font) !important;
+  }
+  #calendar-event-window #event-toolbox,
+  #calendar-event-window #event-toolbar {
+    background: var(--fm-chrome) !important;
+    border: 0 !important;
+  }
+  #calendar-event-window #event-toolbar { padding: 10px 12px !important; }
+  #calendar-event-window #event-toolbar toolbarbutton {
+    min-block-size: 34px !important;
+    padding: 5px 9px !important;
+    border-radius: 7px !important;
+  }
+  #calendar-event-window #button-saveandclose:not([disabled="true"]) {
+    background: var(--fm-accent) !important;
+    color: white !important;
+    fill: white !important;
+    font-weight: 600 !important;
+  }
+  #calendar-event-dialog-inner { padding: 10px 12px !important; box-sizing: border-box !important; min-inline-size: 0 !important; }
+  #calendar-event-dialog-inner :is(#item-title,#item-location) { box-sizing: border-box !important; min-inline-size: 0 !important; }
+  #calendar-event-dialog-inner #event-grid { border-spacing: 0 6px !important; }
+  #calendar-event-dialog-inner #event-grid th {
+    font-weight: 400 !important;
+    color: var(--fm-text-2) !important;
+    padding-inline-end: 12px !important;
+  }
+  #calendar-event-dialog-inner :is(#item-title,#item-location,menulist) {
+    background: var(--fm-field) !important;
+    color: var(--fm-text) !important;
+    border: 1px solid transparent !important;
+    border-radius: 7px !important;
+    min-block-size: 30px !important;
+    padding-inline: 9px !important;
+  }
+  #calendar-event-dialog-inner #item-title {
+    font-family: var(--fm-font-display) !important;
+    font-size: 19px !important;
+    font-weight: 600 !important;
+    min-block-size: 38px !important;
+  }
+  #calendar-event-dialog-inner :is(input,menulist):focus-visible {
+    outline: 2px solid var(--fm-accent) !important;
+    outline-offset: 1px !important;
+  }
+  #calendar-event-dialog-inner :is(tabpanels,tabpanel) { background: transparent !important; border-color: var(--fm-hairline) !important; }
+}
+@media (max-width: 1100px) {
+  #calendarViewHeader { padding: 12px !important; }
+  #intervalDescription { font-size: 19px !important; }
+}
