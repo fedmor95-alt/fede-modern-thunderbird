@@ -16,7 +16,7 @@ class DistributionTests(unittest.TestCase):
     def test_theme_and_calendar_share_the_existing_extension_id(self):
         with tempfile.TemporaryDirectory() as directory:
             package = Path(directory) / 'theme.xpi'
-            self.assertEqual(build_calendar_addon.build(package), '1.0.1')
+            self.assertEqual(build_calendar_addon.build(package), '1.0.2')
             first = package.read_bytes()
             build_calendar_addon.build(package)
             self.assertEqual(package.read_bytes(), first)
@@ -25,7 +25,11 @@ class DistributionTests(unittest.TestCase):
                 self.assertEqual(manifest['browser_specific_settings']['gecko']['id'], 'fede-day-night@local')
                 self.assertEqual(set(manifest['experiment_apis']), {'dayNight', 'calendarAssist'})
                 self.assertIn('function parseTitle', zipped.read('calendar-assist/experiment.js').decode())
-                self.assertIn('messenger.calendarAssist.init()', zipped.read('background.js').decode())
+                self.assertIn('messenger.calendarAssist.init(config)', zipped.read('background.js').decode())
+                self.assertIn('OAuth2.sys.mjs', zipped.read('calendar-assist/experiment.js').decode())
+                self.assertIn('https://meet.googleapis.com/v2/spaces', zipped.read('calendar-assist/experiment.js').decode())
+                self.assertIn('https://api.zoom.us/v2/users/me/meetings', zipped.read('calendar-assist/experiment.js').decode())
+                self.assertIn('http://127.0.0.1/callback', zipped.read('calendar-assist/experiment.js').decode())
                 self.assertNotIn('identity', manifest.get('permissions', []))
 
     def test_public_kits_select_shared_https_channel(self):

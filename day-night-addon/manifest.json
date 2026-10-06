@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "Fede Modern — tema e calendario",
-  "version": "1.0.1",
-  "description": "Tema giorno/notte e creazione eventi dal titolo, con link Meet e Zoom.",
+  "version": "1.0.2",
+  "description": "Tema giorno/notte, creazione eventi dal titolo e videoconferenze Meet/Zoom con OAuth.",
   "author": "Fede Modern",
   "browser_specific_settings": {
     "gecko": {

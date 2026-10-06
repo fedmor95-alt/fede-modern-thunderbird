@@ -1,5 +1,6 @@
 var {ExtensionCommon} = ChromeUtils.importESModule("resource://gre/modules/ExtensionCommon.sys.mjs");
 var {ExtensionSupport} = ChromeUtils.importESModule("resource:///modules/ExtensionSupport.sys.mjs");
+var {OAuth2} = ChromeUtils.importESModule("resource:///modules/OAuth2.sys.mjs");
 
 const FM_LISTENER = "fede-calendar@local";
 const FM_URLS = [
@@ -9,6 +10,35 @@ const FM_URLS = [
 const FM_IFRAME = "chrome://calendar/content/calendar-item-iframe.xhtml";
 const FM_HTML = "http://www.w3.org/1999/xhtml";
 const FM_VIDEO_TOOLBARS = new WeakMap();
+const FM_TOKEN_ORIGIN = "https://oauth.fede-modern.invalid";
+const FM_PROVIDERS = Object.freeze({
+  google: {
+    label: "Google Meet",
+    scope: "https://www.googleapis.com/auth/meetings.space.created",
+    authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
+    tokenEndpoint: "https://oauth2.googleapis.com/token",
+    issuerIdentifier: "https://accounts.google.com",
+    redirectionEndpoint: "http://127.0.0.1/callback",
+  },
+  zoom: {
+    label: "Zoom",
+    scope: "meeting:write:meeting",
+    authorizationEndpoint: "https://zoom.us/oauth/authorize",
+    tokenEndpoint: "https://zoom.us/oauth/token",
+    redirectionEndpoint: "http://127.0.0.1/callback",
+  },
+});
+
+function fmVideoConfig(value) {
+  const string = item => typeof item === "string" ? item.trim() : "";
+  const googleClientId = string(value?.googleClientId);
+  const googleClientSecret = string(value?.googleClientSecret);
+  const zoomClientId = string(value?.zoomClientId);
+  if (googleClientId.length > 300 || googleClientSecret.length > 300 || zoomClientId.length > 300) {
+    throw new Error("Identificativo OAuth troppo lungo");
+  }
+  return {googleClientId, googleClientSecret, zoomClientId};
+}
 
 function fmMeetingUrl(url, win) {
   try {
@@ -23,8 +53,9 @@ function fmMeetingUrl(url, win) {
 }
 
 class FmEventEditor {
-  constructor(frame) {
+  constructor(frame, assist) {
     this.frame = frame;
+    this.assist = assist;
     this.win = frame.contentWindow;
     this.doc = frame.contentDocument;
     this.title = this.doc.getElementById("item-title");
@@ -178,13 +209,12 @@ class FmEventEditor {
     button.setAttribute("label", "Videoconferenza");
     button.setAttribute("tooltiptext", "Aggiungi o apri una videoconferenza");
     const menu = outer.createXULElement("menupopup");
-    for (const [url, label] of [["https://meet.google.com/", "Crea in Google Meet…"], ["https://zoom.us/meeting", "Programma in Zoom…"]]) {
+    for (const [provider, label] of [["google", "Crea link Google Meet"], ["zoom", "Programma riunione Zoom"]]) {
       const item = outer.createXULElement("menuitem");
       item.setAttribute("label", label);
       item.addEventListener("command", event => {
         if (!event.isTrusted) return;
-        current()?.win.openLinkExternally(url);
-        current()?.showHint("Copia il link video, poi scegli “Aggiungi link” qui.");
+        current()?.createVideo(provider);
       });
       menu.appendChild(item);
     }
@@ -211,6 +241,11 @@ class FmEventEditor {
     if (!Services.prompt.prompt(this.win, "Videoconferenza", "Incolla il link Google Meet o Zoom", value, null, {value: 0})) return;
     const safe = fmMeetingUrl(value.value.trim(), this.win);
     if (!safe) { this.showHint("Inserisci un link Meet o Zoom valido, in HTTPS."); return; }
+    this.attachVideoLink(safe);
+  }
+
+  attachVideoLink(safe) {
+    if (!this.active) return;
     if (this.existingLink()) { this.showHint("L'evento ha già un link video."); return; }
     try {
       const location = this.doc.getElementById("item-location");
@@ -226,6 +261,37 @@ class FmEventEditor {
     } catch (cause) {
       console.error("[fede-calendar] link video", cause);
       this.showHint("Non riesco ad aggiungere il link all'evento");
+    }
+  }
+
+  async createVideo(provider) {
+    if (this.videoBusy || !this.active) return;
+    if (this.existingLink()) { this.showHint("L'evento ha già un link video."); return; }
+    if (provider === "zoom" && (this.doc.getElementById("event-all-day")?.checked || !Number.isFinite(+new Date(this.start.value)) || !Number.isFinite(+new Date(this.end.value)))) {
+      this.showHint("Per Zoom imposta data e orari di inizio e fine dell'evento.");
+      return;
+    }
+    if (!this.assist.hasClientId(provider)) {
+      this.showHint(`Configura ${FM_PROVIDERS[provider].label} nelle opzioni dell'estensione Fede Modern.`);
+      return;
+    }
+    this.videoBusy = true;
+    try {
+      this.finalizeTitle();
+      this.showHint(`Autorizza ${FM_PROVIDERS[provider].label} nel browser, se richiesto…`);
+      const details = {
+        title: this.title.value.trim(),
+        start: new Date(this.start.value),
+        end: new Date(this.end.value),
+        allDay: !!this.doc.getElementById("event-all-day")?.checked,
+      };
+      const link = await this.assist.createVideo(provider, details);
+      if (this.active) this.attachVideoLink(link);
+    } catch (error) {
+      console.error("[fede-calendar] video creation", error);
+      if (this.active) this.showHint(`Non riesco a creare la riunione ${FM_PROVIDERS[provider].label}. Controlla autorizzazione e connessione.`);
+    } finally {
+      this.videoBusy = false;
     }
   }
 
@@ -256,6 +322,106 @@ this.calendarAssist = class extends ExtensionCommon.ExtensionAPI {
     super(...args);
     this.editors = new Map();
     this.windows = new Map();
+    this.videoConfig = fmVideoConfig(null);
+    this.oauth = new Map();
+    this.authorizations = new Map();
+  }
+
+  hasClientId(provider) {
+    return !!(provider === "google" ? this.videoConfig.googleClientId : this.videoConfig.zoomClientId);
+  }
+
+  async refreshToken(provider, clientId) {
+    const matches = await Services.logins.searchLoginsAsync({origin: FM_TOKEN_ORIGIN});
+    return matches.find(login => login.httpRealm === provider && login.username === clientId)?.password || null;
+  }
+
+  async saveRefreshToken(provider, clientId, token) {
+    if (!token) throw new Error("Il provider non ha restituito un token di rinnovo");
+    const matches = await Services.logins.searchLoginsAsync({origin: FM_TOKEN_ORIGIN});
+    const previous = matches.find(login => login.httpRealm === provider && login.username === clientId);
+    if (previous?.password === token) return;
+    if (previous) {
+      const updated = previous.clone();
+      updated.password = token;
+      await Services.logins.modifyLoginAsync(previous, updated);
+    } else {
+      const login = Cc["@mozilla.org/login-manager/loginInfo;1"].createInstance(Ci.nsILoginInfo);
+      login.init(FM_TOKEN_ORIGIN, null, provider, clientId, token, "", "");
+      await Services.logins.addLoginAsync(login);
+    }
+  }
+
+  async authorize(provider) {
+    const config = FM_PROVIDERS[provider];
+    if (!config) throw new Error("Provider video sconosciuto");
+    const clientId = provider === "google" ? this.videoConfig.googleClientId : this.videoConfig.zoomClientId;
+    if (!clientId) throw new Error("Client OAuth non configurato");
+    const key = `${provider}:${clientId}`;
+    if (this.authorizations.has(key)) return this.authorizations.get(key);
+    const pending = this.authorizeOnce(provider, config, clientId, key);
+    this.authorizations.set(key, pending);
+    try { return await pending; }
+    finally { this.authorizations.delete(key); }
+  }
+
+  async authorizeOnce(provider, config, clientId, key) {
+    let oauth = this.oauth.get(key);
+    if (!oauth) {
+      oauth = new OAuth2(config.scope, {
+        ...config,
+        clientId,
+        clientSecret: provider === "google" ? this.videoConfig.googleClientSecret || null : null,
+        usePKCE: true,
+        useExternalBrowser: true,
+      });
+      if (provider === "google") oauth.extraAuthParams.push(["access_type", "offline"], ["prompt", "consent"]);
+      oauth.refreshToken = await this.refreshToken(provider, clientId);
+      this.oauth.set(key, oauth);
+    }
+    const pending = oauth.connect(true, false);
+    let timer;
+    try {
+      await Promise.race([pending, new Promise((_, reject) => {
+        timer = setTimeout(() => {
+          if (oauth.request) {
+            oauth.finishAuthorizationRequest();
+            oauth.onAuthorizationFailed(null, '{ "error": "timeout" }', "timeout");
+          }
+          reject(new Error("Autorizzazione scaduta; riprova dalle opzioni"));
+        }, 180000);
+      })]);
+    } finally {
+      clearTimeout(timer);
+    }
+    await this.saveRefreshToken(provider, clientId, oauth.refreshToken);
+    return oauth.accessToken;
+  }
+
+  async createVideo(provider, details) {
+    if (provider === "zoom" && (details.allDay || !Number.isFinite(+details.start) || !Number.isFinite(+details.end) || details.end <= details.start)) {
+      throw new Error("Zoom richiede un orario valido");
+    }
+    const token = await this.authorize(provider);
+    const url = provider === "google" ? "https://meet.googleapis.com/v2/spaces" : "https://api.zoom.us/v2/users/me/meetings";
+    const duration = Math.max(1, Math.min(1440, Math.ceil((details.end - details.start) / 60000)));
+    const body = provider === "google" ? {} : {
+      topic: (details.title || "Riunione").slice(0, 200),
+      type: 2,
+      start_time: details.start.toISOString().replace(/\.\d{3}Z$/, "Z"),
+      duration,
+      timezone: "UTC",
+    };
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {Authorization: `Bearer ${token}`, "Content-Type": "application/json"},
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) throw new Error(`${provider} API HTTP ${response.status}`);
+    const data = await response.json();
+    const link = fmMeetingUrl(provider === "google" ? data.meetingUri : data.join_url, {URL});
+    if (!link) throw new Error(`${provider} non ha restituito un link valido`);
+    return link;
   }
 
   attach(win) {
@@ -272,7 +438,7 @@ this.calendarAssist = class extends ExtensionCommon.ExtensionAPI {
           if (href === FM_IFRAME) {
             seen.add(frame);
             if (!this.editors.has(frame)) {
-              const editor = new FmEventEditor(frame);
+              const editor = new FmEventEditor(frame, this);
               if (editor.active) this.editors.set(frame, editor);
             }
             if (this.editors.has(frame)) state.frames.add(frame);
@@ -329,7 +495,8 @@ this.calendarAssist = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
     const self = this;
     return {calendarAssist: {
-      async init() {
+      async init(config) {
+        self.videoConfig = fmVideoConfig(config);
         if (self.registered) return;
         self.registered = true;
         ExtensionSupport.registerWindowListener(FM_LISTENER, {
@@ -337,6 +504,17 @@ this.calendarAssist = class extends ExtensionCommon.ExtensionAPI {
           onLoadWindow: win => self.attach(win),
           onUnloadWindow: win => self.detach(win),
         });
+      },
+      async configureVideo(config) {
+        const next = fmVideoConfig(config);
+        if (JSON.stringify(next) !== JSON.stringify(self.videoConfig)) {
+          self.videoConfig = next;
+          self.oauth.clear();
+        }
+      },
+      async connectVideo(provider) {
+        await self.authorize(provider);
+        return true;
       },
     }};
   }

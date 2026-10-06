@@ -13,3 +13,11 @@ input[type=checkbox] {width: 1.15rem; height: 1.15rem;}
 button {padding: .6rem 1.25rem; border: 0; border-radius: .5rem; color: ButtonText; background: ButtonFace; cursor: pointer;}
 :focus-visible {outline: 2px solid Highlight; outline-offset: 3px;}
 #status {min-height: 1.6em;}
+section {margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid color-mix(in srgb, CanvasText 18%, transparent);}
+h2 {font-size: 1.35rem;}
+h3 {font-size: 1.05rem; margin: 1.7rem 0 .65rem;}
+#video-settings label {display: block; margin: .8rem 0 .35rem;}
+#video-settings input {box-sizing: border-box; width: 100%; padding: .65rem .8rem; border: 1px solid GrayText; border-radius: .55rem; background: Field; color: FieldText;}
+#video-settings code {overflow-wrap: anywhere;}
+.actions {margin: 1rem 0;}
+#video-status {min-height: 1.6em;}

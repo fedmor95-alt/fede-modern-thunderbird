@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Tema giorno e notte</title>
+  <title>Fede Modern — impostazioni</title>
   <link rel="stylesheet" href="options.css">
   <script type="module" src="options.js"></script>
 </head>
 <body>
 <main>
-  <h1>Tema giorno e notte</h1>
+  <h1>Fede Modern</h1>
+  <p>Impostazioni del tema e delle videoconferenze nel calendario.</p>
+  <h2>Tema giorno e notte</h2>
   <p>Il tema cambia soltanto in Thunderbird. Il desktop resta invariato.</p>
   <form id="settings">
     <label class="toggle"><input id="enabled" type="checkbox"> Pianificazione automatica</label>
@@ -20,6 +22,26 @@
     <button type="submit">Salva</button>
     <p id="status" role="status" aria-live="polite"></p>
   </form>
+  <section aria-labelledby="video-heading">
+    <h2 id="video-heading">Videoconferenze nel calendario</h2>
+    <p>Il pulsante Videoconferenza può creare il link nell'evento. Collega ogni servizio una volta su questo dispositivo; nessun account o token entra nel pacchetto pubblico.</p>
+    <form id="video-settings">
+      <h3>Google Meet</h3>
+      <label for="googleClientId">ID client OAuth desktop</label>
+      <input id="googleClientId" type="text" autocomplete="off" spellcheck="false" placeholder="…apps.googleusercontent.com">
+      <label for="googleClientSecret">Client secret desktop, se previsto</label>
+      <input id="googleClientSecret" type="password" autocomplete="off" spellcheck="false">
+      <p class="hint">Nel progetto Google Cloud abilita Google Meet API; crea un client OAuth «Applicazione desktop» con lo scope <code>meetings.space.created</code>. Il client secret delle app desktop non è una credenziale riservata.</p>
+      <div class="actions"><button type="button" id="connectGoogle">Collega Google</button></div>
+      <h3>Zoom</h3>
+      <label for="zoomClientId">ID client OAuth pubblico</label>
+      <input id="zoomClientId" type="text" autocomplete="off" spellcheck="false">
+      <p class="hint">Crea un'app OAuth user-managed su Zoom Marketplace, abilita Public Client + PKCE, aggiungi lo scope <code>meeting:write:meeting</code> e registra il redirect <code>http://127.0.0.1/callback</code>.</p>
+      <div class="actions"><button type="button" id="connectZoom">Collega Zoom</button></div>
+      <p class="hint">I client ID restano nelle impostazioni locali dell'estensione; i token di rinnovo sono nel gestore credenziali di Thunderbird. Per gli eventi creati, salva l'evento dopo l'aggiunta del link.</p>
+      <p id="video-status" role="status" aria-live="polite"></p>
+    </form>
+  </section>
 </main>
 </body>
 </html>

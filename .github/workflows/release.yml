@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: '22'
       - run: python -m unittest discover -p 'test_*.py' -q
-      - run: node calendar-assist/parse-title.test.mjs
+      - run: node --test calendar-assist/*.test.mjs
 
   publish:
     needs: test

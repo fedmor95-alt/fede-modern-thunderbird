@@ -26,3 +26,38 @@ document.getElementById("settings").addEventListener("submit", async event => {
   }
 });
 load().catch(error => {status.textContent = error.message;});
+
+const videoFields = ["googleClientId", "googleClientSecret", "zoomClientId"];
+const videoStatus = document.getElementById("video-status");
+async function loadVideo() {
+  const config = await messenger.storage.local.get(videoFields);
+  for (const key of videoFields) document.getElementById(key).value = config[key] || "";
+}
+async function saveVideo() {
+  const config = Object.fromEntries(videoFields.map(key => [key, document.getElementById(key).value.trim()]));
+  await messenger.storage.local.set(config);
+  await messenger.calendarAssist.configureVideo(config);
+  return config;
+}
+document.getElementById("video-settings").addEventListener("submit", event => event.preventDefault());
+for (const [provider, buttonId, idField] of [["google", "connectGoogle", "googleClientId"], ["zoom", "connectZoom", "zoomClientId"]]) {
+  const button = document.getElementById(buttonId);
+  button.addEventListener("click", async () => {
+    if (!document.getElementById(idField).value.trim()) {
+      videoStatus.textContent = "Inserisci prima l'ID client OAuth.";
+      return;
+    }
+    button.disabled = true;
+    videoStatus.textContent = `Autorizza ${provider === "google" ? "Google Meet" : "Zoom"} nel browser…`;
+    try {
+      await saveVideo();
+      await messenger.calendarAssist.connectVideo(provider);
+      videoStatus.textContent = `${provider === "google" ? "Google Meet" : "Zoom"} collegato. Ora puoi creare il link dall'editor evento.`;
+    } catch (error) {
+      videoStatus.textContent = `Connessione non riuscita: ${error.message || error}`;
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+loadVideo().catch(error => {videoStatus.textContent = error.message;});

@@ -2,7 +2,23 @@
   {
     "namespace": "calendarAssist",
     "functions": [
-      {"name": "init", "type": "function", "async": true, "parameters": []}
+      {"name": "init", "type": "function", "async": true, "parameters": [
+        {"name": "config", "type": "object", "optional": true, "properties": {
+          "googleClientId": {"type": "string", "optional": true},
+          "googleClientSecret": {"type": "string", "optional": true},
+          "zoomClientId": {"type": "string", "optional": true}
+        }}
+      ]},
+      {"name": "configureVideo", "type": "function", "async": true, "parameters": [
+        {"name": "config", "type": "object", "properties": {
+          "googleClientId": {"type": "string", "optional": true},
+          "googleClientSecret": {"type": "string", "optional": true},
+          "zoomClientId": {"type": "string", "optional": true}
+        }}
+      ]},
+      {"name": "connectVideo", "type": "function", "async": true, "parameters": [
+        {"name": "provider", "type": "string"}
+      ]}
     ]
   }
 ]

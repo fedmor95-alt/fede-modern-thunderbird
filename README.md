@@ -5,8 +5,9 @@
 Canale condiviso: `https://github.com/fedmor95-alt/fede-modern-thunderbird/releases/latest/download/stable.json`.
 
 Pacchetto indipendente, non un fork né una distribuzione ufficiale Thunderbird.
-Release 1.0.9: calendario con interpretazione locale del campo Titolo e link
-Meet/Zoom, oltre al canale pubblico di aggiornamento. Include il calendario e
+Release 1.0.10: calendario con interpretazione locale del campo Titolo e
+creazione diretta di link Meet/Zoom tramite OAuth, oltre al canale pubblico di
+aggiornamento. Include il calendario e
 l'editor eventi della 1.0.7; contatori
 account unificati esclusivamente non letti. Verificata su Thunderbird **156–157**
 Linux (Fedora e SteamOS). Supporto installer **macOS beta**, non ancora provato
@@ -30,16 +31,45 @@ normale canale del sistema. Non disabilitare gli aggiornamenti di sicurezza.
   `taglio capelli` e `Con Marco` resta nella descrizione. Marco non viene invitato
   automaticamente. Date impostate manualmente non sono sovrascritte. Il parser
   è locale, non usa rete, AI, contatti o plugin esterni.
-- `Videoconferenza` nell'editor: apre Google Meet o Zoom per creare/programmare,
-  poi aggiunge il link copiato all'evento e offre `Partecipa` quando un link è
-  presente. La generazione automatica del link dentro Thunderbird **non è ancora
-  attiva**: richiede le autorizzazioni OAuth e una registrazione app presso
-  Google/Zoom. I comandi non simulano una connessione già autorizzata.
+- `Videoconferenza` nell'editor: dopo la configurazione OAuth crea un nuovo
+  spazio Google Meet o programma una riunione Zoom e aggiunge il link all'evento
+  ancora aperto. Mantiene `Aggiungi link` manuale e `Partecipa`. La connessione
+  a Google/Zoom è **separata su ogni dispositivo** e non è pre-autorizzata nel kit.
+  Cambiare in seguito ora/titolo dell'evento Thunderbird non modifica
+  automaticamente la riunione già creata sul servizio video.
 
-Non contiene account, password, OAuth, email, database, storage snooze o font
+Il kit non contiene account, password, token OAuth, email, database, storage snooze o font
 Apple. Usa SF Pro se già installato legittimamente nel sistema; altrimenti il
 font di sistema. Quindi la tipografia può differire su un dispositivo senza SF Pro.
 I due add-on sono privilegiati: installare soltanto release fidate.
+
+### Collegare Meet e Zoom
+
+Apri **Componenti aggiuntivi e temi → Fede Modern — tema e calendario → Opzioni**.
+La sezione `Videoconferenze nel calendario` accetta gli ID client OAuth;
+`Collega Google` e `Collega Zoom` aprono il browser di sistema per il consenso.
+Non incollare password, token o secret di un'app web/server nelle impostazioni.
+
+- Google: crea nel tuo progetto Google Cloud un client OAuth di tipo
+  **Applicazione desktop**, abilita **Google Meet REST API** e lo scope minimo
+  `https://www.googleapis.com/auth/meetings.space.created`. Inserisci il client
+  ID e, se Google lo fornisce, il client secret *desktop*. Per distribuire a
+  utenti esterni al progetto, Google può richiedere configurazione/validazione
+  della schermata di consenso. [Guida ufficiale](https://developers.google.com/workspace/meet/api/guides/authenticate-authorize).
+- Zoom: crea su Zoom Marketplace un'app OAuth **user-managed**, abilita il
+  **public client con PKCE**, aggiungi `meeting:write:meeting` e registra
+  esattamente `http://127.0.0.1/callback` come loopback redirect. Inserisci
+  soltanto il client ID pubblico. Un'app in sviluppo può essere utilizzabile
+  solo dagli utenti autorizzati al test; la distribuzione pubblica richiede
+  i passaggi previsti da Zoom. [Guida ufficiale](https://developers.zoom.us/docs/integrations/oauth/).
+
+L'estensione usa l'OAuth integrato in Thunderbird (browser esterno, PKCE e
+callback temporaneo su `127.0.0.1`) e salva i token di rinnovo nel gestore
+credenziali del **profilo locale**, non su GitHub. Gli ID client restano nello
+storage locale dell'add-on. In editor, clicca `Videoconferenza → Crea link Google
+Meet` oppure `Programma riunione Zoom` e infine salva l'evento. Ogni click
+crea una nuova riunione remota: se l'evento viene chiuso senza salvarlo,
+elimina manualmente la riunione eventualmente creata nel relativo servizio.
 
 ## Prima installazione
 
@@ -49,7 +79,7 @@ almeno una volta. Non occorre root. Account e login si configurano separatamente
 
 ```bash
 python3 updater.py profiles
-python3 updater.py install releases/fede-modern-1.0.9.zip --profile /percorso/del/profilo --adopt --dry-run
+python3 updater.py install releases/fede-modern-1.0.10.zip --profile /percorso/del/profilo --adopt --dry-run
 python3 setup.py --profile /percorso/del/profilo --enable
 ```
 
@@ -85,8 +115,8 @@ Per pubblicare una modifica dalla pagina GitHub:
 1. Modifica il CSS in `payload/chrome/` o l'add-on nei sorgenti `day-night-addon/`
    e `calendar-assist/`. `build.py` ricostruisce automaticamente il relativo XPI;
    incrementa la versione nel manifest quando cambi il suo codice.
-2. Incrementa `VERSION`, per esempio da `1.0.9` a `1.0.10`, e salva su `main`.
-3. GitHub Actions esegue i test Python e del parser su Linux/Mac, costruisce gli ZIP, carica tutti gli
+2. Incrementa `VERSION`, per esempio da `1.0.10` a `1.0.11`, e salva su `main`.
+3. GitHub Actions esegue i test Python e JavaScript su Linux/Mac, costruisce gli ZIP, carica tutti gli
    asset in una bozza e poi pubblica la release completa come ultima stabile.
 4. I dispositivi ricevono la nuova versione al controllo successivo disponibile.
 
@@ -100,14 +130,14 @@ rimangono sui dispositivi: questo canale distribuisce le personalizzazioni.
 
 Gli aggiornamenti dell'app Thunderbird continuano attraverso il suo canale
 abituale; le versioni del pacchetto dichiarano quali versioni principali sono
-state verificate. La 1.0.9 accetta Thunderbird 156–157.
+state verificate. La 1.0.10 accetta Thunderbird 156–157.
 
 ## Distribuzione locale alternativa
 
 1. Modificare i sorgenti e aggiornare `payload/`; incrementare versione add-on
    quando cambia codice XPI. Eseguire test e prova nel profilo fittizio.
 2. Creare una **nuova** release, senza riutilizzare un numero:
-   `python3 build.py --version 1.0.10`.
+   `python3 build.py --version 1.0.11`.
 3. Il canale locale `releases/stable.json` punta alla nuova release. Il servizio
    del computer principale la applica automaticamente quando Thunderbird chiude.
 4. Distribuire via SSH con `python3 deploy.py --host UTENTE@HOST --remote-home
@@ -147,7 +177,7 @@ Il rollback sottostante è identico su Mac, a Thunderbird chiuso.
 
 Non serve un fork di Thunderbird. Crea un repository pubblico del solo pacchetto,
 pubblica una GitHub Release e allega i kit Linux/Mac beta, i checksum,
-`fede-modern-1.0.9.zip` e `stable.json`. Un sito può avere due pulsanti che puntano
+`fede-modern-1.0.10.zip` e `stable.json`. Un sito può avere due pulsanti che puntano
 agli asset della release. Non pubblicare il profilo, le cartelle QA, le
 configurazioni personali, gli account o credenziali. Il builder usa un elenco
 chiuso di file e non legge il profilo.
