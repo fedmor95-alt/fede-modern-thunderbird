@@ -5,7 +5,7 @@
 Canale condiviso: `https://github.com/fedmor95-alt/fede-modern-thunderbird/releases/latest/download/stable.json`.
 
 Pacchetto indipendente, non un fork né una distribuzione ufficiale Thunderbird.
-Release 1.0.10: calendario con interpretazione locale del campo Titolo e
+Release 1.0.11: calendario con interpretazione locale del campo Titolo e
 creazione diretta di link Meet/Zoom tramite OAuth, oltre al canale pubblico di
 aggiornamento. Include il calendario e
 l'editor eventi della 1.0.7; contatori
@@ -83,7 +83,7 @@ almeno una volta. Non occorre root. Account e login si configurano separatamente
 
 ```bash
 python3 updater.py profiles
-python3 updater.py install releases/fede-modern-1.0.10.zip --profile /percorso/del/profilo --adopt --dry-run
+python3 updater.py install releases/fede-modern-1.0.11.zip --profile /percorso/del/profilo --adopt --dry-run
 python3 setup.py --profile /percorso/del/profilo --enable
 ```
 
@@ -134,7 +134,7 @@ rimangono sui dispositivi: questo canale distribuisce le personalizzazioni.
 
 Gli aggiornamenti dell'app Thunderbird continuano attraverso il suo canale
 abituale; le versioni del pacchetto dichiarano quali versioni principali sono
-state verificate. La 1.0.10 accetta Thunderbird 156–157.
+state verificate. La 1.0.11 accetta Thunderbird 156–157.
 
 ## Distribuzione locale alternativa
 
@@ -181,7 +181,7 @@ Il rollback sottostante è identico su Mac, a Thunderbird chiuso.
 
 Non serve un fork di Thunderbird. Crea un repository pubblico del solo pacchetto,
 pubblica una GitHub Release e allega i kit Linux/Mac beta, i checksum,
-`fede-modern-1.0.10.zip` e `stable.json`. Un sito può avere due pulsanti che puntano
+`fede-modern-1.0.11.zip` e `stable.json`. Un sito può avere due pulsanti che puntano
 agli asset della release. Non pubblicare il profilo, le cartelle QA, le
 configurazioni personali, gli account o credenziali. Il builder usa un elenco
 chiuso di file e non legge il profilo.
