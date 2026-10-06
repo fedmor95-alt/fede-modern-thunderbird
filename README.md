@@ -54,8 +54,12 @@ Non incollare password, token o secret di un'app web/server nelle impostazioni.
   **Applicazione desktop**, abilita **Google Meet REST API** e lo scope minimo
   `https://www.googleapis.com/auth/meetings.space.created`. Inserisci il client
   ID e, se Google lo fornisce, il client secret *desktop*. Per distribuire a
-  utenti esterni al progetto, Google può richiedere configurazione/validazione
-  della schermata di consenso. [Guida ufficiale](https://developers.google.com/workspace/meet/api/guides/authenticate-authorize).
+  utenti esterni al progetto, occorre configurare la schermata di consenso:
+  questo scope è classificato **sensibile** e la pubblicazione richiede la
+  verifica OAuth di Google. In modalità **Test**, i token di rinnovo scadono
+  dopo 7 giorni, quindi l'account va ricollegato periodicamente.
+  [Scope Meet](https://developers.google.com/workspace/meet/api/guides/authenticate-authorize),
+  [limiti della modalità Test](https://support.google.com/cloud/answer/15549945?hl=en).
 - Zoom: crea su Zoom Marketplace un'app OAuth **user-managed**, abilita il
   **public client con PKCE**, aggiungi `meeting:write:meeting` e registra
   esattamente `http://127.0.0.1/callback` come loopback redirect. Inserisci

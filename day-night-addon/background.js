@@ -1,6 +1,11 @@
 import {DEFAULTS, validateSettings, modeAt} from "./schedule.js";
 
 const ALARM = "day-night-local-clock";
+const VIDEO_DEFAULTS = {
+  googleClientId: "291251992589-otcqefulhj7t9qnih4januqd8g9iro7q.apps.googleusercontent.com",
+  googleClientSecret: "",
+  zoomClientId: "qQkw0Z2ASlib4thBq5_dOQ",
+};
 let pending = Promise.resolve();
 
 async function syncSchedule() {
@@ -27,13 +32,13 @@ messenger.alarms.onAlarm.addListener(alarm => {
 messenger.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && Object.keys(DEFAULTS).some(key => key in changes)) update();
   if (area === "local" && ["googleClientId", "googleClientSecret", "zoomClientId"].some(key => key in changes)) {
-    messenger.storage.local.get(["googleClientId", "googleClientSecret", "zoomClientId"])
+    messenger.storage.local.get(VIDEO_DEFAULTS)
       .then(config => messenger.calendarAssist.configureVideo(config))
       .catch(error => console.error("[calendar-assist] config", error));
   }
 });
 // Alarms do not survive a Thunderbird restart. Apply immediately and recreate.
 update();
-messenger.storage.local.get(["googleClientId", "googleClientSecret", "zoomClientId"])
+messenger.storage.local.get(VIDEO_DEFAULTS)
   .then(config => messenger.calendarAssist.init(config))
   .catch(error => console.error("[calendar-assist]", error));

@@ -28,9 +28,14 @@ document.getElementById("settings").addEventListener("submit", async event => {
 load().catch(error => {status.textContent = error.message;});
 
 const videoFields = ["googleClientId", "googleClientSecret", "zoomClientId"];
+const videoDefaults = {
+  googleClientId: "291251992589-otcqefulhj7t9qnih4januqd8g9iro7q.apps.googleusercontent.com",
+  googleClientSecret: "",
+  zoomClientId: "qQkw0Z2ASlib4thBq5_dOQ",
+};
 const videoStatus = document.getElementById("video-status");
 async function loadVideo() {
-  const config = await messenger.storage.local.get(videoFields);
+  const config = await messenger.storage.local.get(videoDefaults);
   for (const key of videoFields) document.getElementById(key).value = config[key] || "";
 }
 async function saveVideo() {
