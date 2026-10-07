@@ -13,6 +13,13 @@ import updater
 
 
 class DistributionTests(unittest.TestCase):
+    def test_release_declares_the_supported_thunderbird_range(self):
+        with tempfile.TemporaryDirectory() as directory:
+            archive = build.build('1.0.12-test', Path(directory))
+            with zipfile.ZipFile(archive) as zipped:
+                release = json.loads(zipped.read('release.json'))
+            self.assertEqual(release['compatibility'], {'min_major': 153, 'max_major': 157})
+
     def test_theme_and_calendar_share_the_existing_extension_id(self):
         with tempfile.TemporaryDirectory() as directory:
             package = Path(directory) / 'theme.xpi'
@@ -37,7 +44,7 @@ class DistributionTests(unittest.TestCase):
             base = Path(directory)
             build.build('1.0.8', base / 'releases')
             build_kit.build_kits(base / 'kits', repository='example/fede-modern', release_dir=base / 'releases')
-            for platform in ['linux', 'mac-beta']:
+            for platform in ['linux', 'mac-beta', 'windows-beta']:
                 archive = base / 'kits' / f'fede-modern-{platform}-1.0.8.zip'
                 with zipfile.ZipFile(archive) as zipped:
                     names = zipped.namelist()

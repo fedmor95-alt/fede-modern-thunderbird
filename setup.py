@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Configure a per-user Linux or macOS updater (no root required)."""
+"""Configure a per-user updater on Linux, macOS or Windows."""
 import argparse
 import json
 from pathlib import Path
@@ -8,8 +8,10 @@ import subprocess
 import sys
 import os
 import plistlib
+from datetime import datetime, timedelta
+import xml.etree.ElementTree as ET
 
-from updater import ALLOWED, atomic, digest, safe_target, profile_version, read_release, sync
+from updater import ALLOWED, atomic, digest, safe_target, profile_version, read_release, sync, is_redirect
 
 ROOT = Path(__file__).resolve().parent
 
@@ -25,6 +27,11 @@ def default_channel():
 
 
 def locations():
+    if sys.platform == 'win32':
+        if not os.environ.get('LOCALAPPDATA'):
+            raise ValueError('Percorso LOCALAPPDATA di Windows non disponibile')
+        runtime = Path(os.environ['LOCALAPPDATA']) / 'Fede Modern'
+        return runtime, runtime, runtime
     if sys.platform == 'darwin':
         runtime = Path.home() / 'Library/Application Support/Fede Modern'
         return runtime, runtime, Path.home() / 'Library/LaunchAgents'
@@ -41,6 +48,39 @@ def launch_agent(runtime, config_path):
         'StandardErrorPath': str(runtime / 'update-error.log'),
         'Umask': 0o077,
     })
+
+
+def windows_task(runtime, config_path, user):
+    """Task uses the logged-in user's token; no password or administrator role."""
+    task = ET.Element('Task', version='1.2', xmlns='http://schemas.microsoft.com/windows/2004/02/mit/task')
+    registration = ET.SubElement(task, 'RegistrationInfo')
+    ET.SubElement(registration, 'Description').text = 'Aggiornamenti Fede Modern per Thunderbird ogni 15 minuti'
+    triggers = ET.SubElement(task, 'Triggers')
+    trigger = ET.SubElement(triggers, 'TimeTrigger')
+    repetition = ET.SubElement(trigger, 'Repetition')
+    ET.SubElement(repetition, 'Interval').text = 'PT15M'
+    ET.SubElement(repetition, 'StopAtDurationEnd').text = 'false'
+    ET.SubElement(trigger, 'StartBoundary').text = (datetime.now() + timedelta(minutes=15)).isoformat(timespec='seconds')
+    ET.SubElement(trigger, 'Enabled').text = 'true'
+    principals = ET.SubElement(task, 'Principals')
+    principal = ET.SubElement(principals, 'Principal', id='CurrentUser')
+    ET.SubElement(principal, 'UserId').text = user
+    ET.SubElement(principal, 'LogonType').text = 'InteractiveToken'
+    ET.SubElement(principal, 'RunLevel').text = 'LeastPrivilege'
+    settings = ET.SubElement(task, 'Settings')
+    for name, value in [('MultipleInstancesPolicy', 'IgnoreNew'),
+                        ('DisallowStartIfOnBatteries', 'false'),
+                        ('StopIfGoingOnBatteries', 'false'),
+                        ('StartWhenAvailable', 'true'), ('ExecutionTimeLimit', 'PT5M')]:
+        ET.SubElement(settings, name).text = value
+    action = ET.SubElement(ET.SubElement(task, 'Actions', Context='CurrentUser'), 'Exec')
+    windowless = Path(sys.executable).with_name('pythonw.exe')
+    executable = windowless if windowless.is_file() else Path(sys.executable)
+    ET.SubElement(action, 'Command').text = str(executable)
+    ET.SubElement(action, 'Arguments').text = subprocess.list2cmdline(
+        [str(runtime / 'updater.py'), 'sync', '--config', str(config_path)])
+    ET.SubElement(action, 'WorkingDirectory').text = str(runtime)
+    return ET.tostring(task, encoding='utf-16', xml_declaration=True)
 
 
 def setup(profile, channel, enable=False):
@@ -67,11 +107,23 @@ def setup(profile, channel, enable=False):
         # Never silently accept edits made after an earlier setup.
         config['initial_files'] = previous['initial_files']
     for path in [config_dir, runtime, units]:
-        if path.is_symlink():
+        if is_redirect(path):
             raise ValueError('Directory di installazione non valida')
         path.mkdir(parents=True, exist_ok=True)
     atomic(runtime / 'updater.py', (ROOT / 'updater.py').read_bytes())
     atomic(config_path, (json.dumps(config, indent=2) + '\n').encode())
+    if sys.platform == 'win32':
+        user = subprocess.run(['whoami'], capture_output=True, text=True, check=True).stdout.strip()
+        if not user:
+            raise ValueError('Impossibile identificare l’utente Windows')
+        task_name = 'FedeModern-' + digest(user.casefold().encode())[:12]
+        task_file = runtime / 'update-task.xml'
+        atomic(task_file, windows_task(runtime, config_path, user))
+        # Verify a first installation before enabling repeated writes.
+        result = sync(config_path)
+        if enable:
+            subprocess.run(['schtasks', '/Create', '/TN', task_name, '/XML', str(task_file), '/F'], check=True)
+        return dict(result, task=task_name, updates_enabled=enable)
     if sys.platform == 'darwin':
         agent = units / 'org.fedemodern.update.plist'
         atomic(agent, launch_agent(runtime, config_path))

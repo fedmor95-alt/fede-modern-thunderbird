@@ -15,7 +15,9 @@ def build(version, destination):
     build_theme_calendar(ROOT / 'payload/extensions/fede-day-night@local.xpi')
     payload = {name: (ROOT / 'payload' / name).read_bytes() for name in sorted(ALLOWED)}
     manifest = {'product': 'fede-modern', 'version': version,
-                'compatibility': {'min_major': 156, 'max_major': 157},
+                # Thunderbird 153 is the current ESR line used on the supported
+                # Windows installation. Keep later tested versions accepted too.
+                'compatibility': {'min_major': 153, 'max_major': 157},
                 'files': {name: hashlib.sha256(data).hexdigest() for name, data in payload.items()}}
     destination.mkdir(parents=True, exist_ok=True)
     output = destination / ('fede-modern-' + version + '.zip')

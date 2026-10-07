@@ -10,13 +10,13 @@ THEME = ROOT / 'day-night-addon'
 
 
 def build(destination):
-    parser = (CALENDAR / 'parse-title.mjs').read_text()
+    parser = (CALENDAR / 'parse-title.mjs').read_text(encoding='utf-8')
     marker = 'export function parseTitle'
     if parser.count(marker) != 1:
         raise ValueError('Esportazione del parser non valida')
-    experiment = parser.replace(marker, 'function parseTitle') + '\n' + (CALENDAR / 'experiment.js').read_text()
-    manifest = json.loads((THEME / 'manifest.json').read_text())
-    json.loads((CALENDAR / 'schema.json').read_text())
+    experiment = parser.replace(marker, 'function parseTitle') + '\n' + (CALENDAR / 'experiment.js').read_text(encoding='utf-8')
+    manifest = json.loads((THEME / 'manifest.json').read_text(encoding='utf-8'))
+    json.loads((CALENDAR / 'schema.json').read_text(encoding='utf-8'))
     destination.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(destination, 'w', zipfile.ZIP_DEFLATED) as archive:
         def add(name, data):

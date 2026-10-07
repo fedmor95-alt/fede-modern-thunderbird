@@ -6,7 +6,8 @@ Only trusted release archives should be used: XPI files are executable code.
 """
 import argparse
 import configparser
-import fcntl
+from contextlib import contextmanager
+import csv
 import hashlib
 import json
 import os
@@ -14,6 +15,7 @@ from pathlib import Path, PurePosixPath
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 import urllib.parse
@@ -59,9 +61,17 @@ def safe_target(profile, rel):
     # explicitly selected profile, while still rejecting links inside it.
     profile = profile.resolve(strict=True)
     target = profile / rel
-    if not target.resolve().is_relative_to(profile.resolve()) or any(p.is_symlink() for p in [target, *target.parents] if p != profile):
+    if not target.resolve().is_relative_to(profile.resolve()) or any(is_redirect(p) for p in [target, *target.parents] if p != profile):
         raise ValueError('Link simbolico non consentito: ' + rel)
     return target
+
+
+def is_redirect(path):
+    # Includes Windows junctions on Python versions preceding Path.is_junction.
+    try:
+        return path.is_symlink() or bool(getattr(path.lstat(), 'st_file_attributes', 0) & 0x400)
+    except FileNotFoundError:
+        return False
 
 
 def read_release(archive):
@@ -85,7 +95,59 @@ def read_release(archive):
 
 def running():
     # Conservative: do not change any profile while a Thunderbird process runs.
+    if sys.platform == 'win32':
+        result = subprocess.run(
+            ['tasklist', '/FI', 'IMAGENAME eq thunderbird.exe', '/FO', 'CSV', '/NH'],
+            capture_output=True, text=True, errors='replace', check=True,
+            creationflags=getattr(subprocess, 'CREATE_NO_WINDOW', 0))
+        return any(row and row[0].casefold() == 'thunderbird.exe'
+                   for row in csv.reader(result.stdout.splitlines()))
     return subprocess.run(['pgrep', '-ix', 'thunderbird'], stdout=subprocess.DEVNULL).returncode == 0
+
+
+@contextmanager
+def profile_lock(path):
+    if is_redirect(path):
+        raise ValueError('Lock non valido')
+    with path.open('a+b') as lock:
+        if sys.platform == 'win32':
+            import msvcrt
+            if path.stat().st_size == 0:
+                lock.write(b'\0')
+                lock.flush()
+            lock.seek(0)
+            msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+            try:
+                yield
+            finally:
+                lock.seek(0)
+                msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            yield
+
+
+def discover_profiles():
+    bases = [Path.home() / '.thunderbird',
+             Path.home() / '.var/app/org.mozilla.Thunderbird/.thunderbird',
+             Path.home() / 'Library/Thunderbird']
+    if sys.platform == 'win32':
+        if not os.environ.get('APPDATA'):
+            raise ValueError('Percorso APPDATA di Windows non disponibile')
+        bases = [Path(os.environ['APPDATA']) / 'Thunderbird']
+    profiles = []
+    for base in bases:
+        ini = configparser.ConfigParser()
+        ini.read(base / 'profiles.ini', encoding='utf-8-sig')
+        for section in ini.sections():
+            if section.startswith('Profile') and ini.has_option(section, 'Path'):
+                path = Path(ini[section]['Path'])
+                if ini.getboolean(section, 'IsRelative', fallback=True):
+                    path = base / path
+                if path not in profiles:
+                    profiles.append(path)
+    return profiles
 
 
 def profile_version(profile):
@@ -123,9 +185,9 @@ def install(archive, profile, adopt=False, dry_run=False):
         if not adopt and (expected is None or digest(target.read_bytes()) != expected):
             raise ValueError('File locale non gestito/modificato: ' + rel + '; verificare prima di usare --adopt')
     pref_file = safe_target(profile, 'user.js')
-    prefs = pref_file.read_text() if pref_file.exists() else ''
-    if '// BEGIN FEDE MODERN' not in prefs:
-        data['user.js'] = (prefs + PREFS).encode()
+    prefs = pref_file.read_bytes() if pref_file.exists() else b''
+    if b'// BEGIN FEDE MODERN' not in prefs:
+        data['user.js'] = prefs + PREFS.encode('utf-8')
     changed = {rel: content for rel, content in data.items() if not (profile / rel).exists() or (profile / rel).read_bytes() != content}
     if previous and previous['version'] == manifest['version'] and not changed:
         return {'status': 'current', 'version': manifest['version']}
@@ -134,14 +196,13 @@ def install(archive, profile, adopt=False, dry_run=False):
     if running():
         return {'status': 'deferred', 'reason': 'Chiudere Thunderbird; nessun file del profilo modificato'}
     lock_path = profile / '.fede-modern-update.lock'
-    if lock_path.is_symlink():
+    if is_redirect(lock_path):
         raise ValueError('Lock non valido')
-    with lock_path.open('a') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    with profile_lock(lock_path):
         if running():
             return {'status': 'deferred', 'reason': 'Thunderbird è stato aperto'}
         backup_root = profile / 'fede-modern-backups'
-        if backup_root.is_symlink():
+        if is_redirect(backup_root):
             raise ValueError('Directory backup non valida')
         backup_root.mkdir(exist_ok=True)
         backup = Path(tempfile.mkdtemp(prefix=time.strftime('%Y%m%d-%H%M%S-'), dir=backup_root))
@@ -205,7 +266,7 @@ def fetch(url):
             if urllib.parse.urlparse(response.url).scheme != 'https':
                 raise ValueError('Redirect non HTTPS')
             data = response.read(MAX_BYTES + 1)
-    elif not parsed.scheme:
+    elif not parsed.scheme or os.path.isabs(url):
         data = Path(url).read_bytes()
     else:
         raise ValueError('Usare un percorso locale o HTTPS')
@@ -263,18 +324,9 @@ def main():
         elif args.command == 'sync':
             result = sync(args.config)
         else:
-            result = []
-            for base in [Path.home() / '.thunderbird', Path.home() / '.var/app/org.mozilla.Thunderbird/.thunderbird', Path.home() / 'Library/Thunderbird']:
-                ini = configparser.ConfigParser()
-                ini.read(base / 'profiles.ini')
-                for section in ini.sections():
-                    if section.startswith('Profile') and ini.has_option(section, 'Path'):
-                        path = Path(ini[section]['Path'])
-                        if ini.getboolean(section, 'IsRelative', fallback=True):
-                            path = base / path
-                        result.append(str(path))
+            result = [str(path) for path in discover_profiles()]
         print(json.dumps(result, ensure_ascii=False, indent=2))
-    except (ValueError, OSError, KeyError, zipfile.BadZipFile) as error:
+    except (ValueError, OSError, KeyError, zipfile.BadZipFile, subprocess.CalledProcessError) as error:
         print(json.dumps({'status': 'error', 'reason': str(error)}, ensure_ascii=False))
         return 1
     return 0

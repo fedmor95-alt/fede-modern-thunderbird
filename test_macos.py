@@ -23,7 +23,7 @@ class MacContractTests(unittest.TestCase):
             self.assertNotIn('sh', agent['ProgramArguments'])
 
     def test_process_guard_is_case_insensitive(self):
-        with patch('updater.subprocess.run') as run:
+        with patch('updater.sys.platform', 'darwin'), patch('updater.subprocess.run') as run:
             run.return_value.returncode = 0
             self.assertTrue(updater.running())
             self.assertEqual(run.call_args.args[0], ['pgrep', '-ix', 'thunderbird'])
@@ -33,7 +33,7 @@ class MacContractTests(unittest.TestCase):
             base = Path(directory) / 'Library/Thunderbird'
             base.mkdir(parents=True)
             (base / 'profiles.ini').write_text('[Profile0]\nPath=Profiles/demo.default\nIsRelative=1\n')
-            with patch('updater.Path.home', return_value=Path(directory)), patch('sys.argv', ['updater.py', 'profiles']), patch('builtins.print') as output:
+            with patch('updater.sys.platform', 'darwin'), patch('updater.Path.home', return_value=Path(directory)), patch('sys.argv', ['updater.py', 'profiles']), patch('builtins.print') as output:
                 self.assertEqual(updater.main(), 0)
                 self.assertEqual(json.loads(output.call_args.args[0]), [str(base / 'Profiles/demo.default')])
 

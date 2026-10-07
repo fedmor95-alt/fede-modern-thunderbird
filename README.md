@@ -1,16 +1,16 @@
 # Fede Modern — pacchetto personalizzazioni desktop
 
-[Scarica l’ultima release per Linux o macOS beta](https://github.com/fedmor95-alt/fede-modern-thunderbird/releases/latest).
+[Scarica l’ultima release per Linux, Windows beta o macOS beta](https://github.com/fedmor95-alt/fede-modern-thunderbird/releases/latest).
 
 Canale condiviso: `https://github.com/fedmor95-alt/fede-modern-thunderbird/releases/latest/download/stable.json`.
 
 Pacchetto indipendente, non un fork né una distribuzione ufficiale Thunderbird.
-Release 1.0.11: calendario con interpretazione locale del campo Titolo e
+Release 1.0.12: calendario con interpretazione locale del campo Titolo e
 creazione diretta di link Meet/Zoom tramite OAuth, oltre al canale pubblico di
 aggiornamento. Include il calendario e
 l'editor eventi della 1.0.7; contatori
-account unificati esclusivamente non letti. Verificata su Thunderbird **156–157**
-Linux (Fedora e SteamOS). Supporto installer **macOS beta**, non ancora provato
+account unificati esclusivamente non letti. Compatibile con Thunderbird **153–157**;
+la verifica grafica su Windows resta parte della beta. Supporto installer **macOS beta**, non ancora provato
 su un Mac reale; non è un DMG né una build modificata di Thunderbird. Il controllo
 blocca altre versioni fino a verifica esplicita; aggiornare Thunderbird con il
 normale canale del sistema. Non disabilitare gli aggiornamenti di sicurezza.
@@ -77,6 +77,44 @@ elimina manualmente la riunione eventualmente creata nel relativo servizio.
 
 ## Prima installazione
 
+### Windows (installer in preparazione)
+
+Il sorgente include `Installa-Windows.cmd` e `install_windows.py`. Il kit Windows
+rimane beta finche installazione, aggiornamento e interfaccia non vengono provati
+su Windows. I pacchetti gia pubblicati non acquistano questo supporto da soli.
+
+Il programma usa una installazione Python 3.9+ gia presente, rilevata con `py -3`
+o `python`; se manca si ferma. Prima di aggiungere Python controllare le
+installazioni esistenti. Avviare e chiudere Thunderbird almeno una volta, poi
+aprire `Installa-Windows.cmd` e selezionare esplicitamente il profilo. Il limite
+di compatibilita Thunderbird 153–157 resta attivo.
+
+I profili sono rilevati da `%APPDATA%\Thunderbird\profiles.ini`. Configurazione
+e updater sono salvati in `%LOCALAPPDATA%\Fede Modern`. L'attivita pianificata
+`FedeModern-...` usa l'utente Windows corrente, senza salvare password, ogni
+15 minuti mentre l'utente e connesso. L'aggiornamento attende che Thunderbird
+sia chiuso. L'installer stampa il nome dell'attivita da trovare nell'Utilita
+di pianificazione, dove e possibile eseguirla subito o disabilitarla.
+
+L'archivio delle personalizzazioni e il canale GitHub sono gli stessi degli
+altri computer; i backup restano nel profilo locale. Per una distribuzione
+manuale verificata si puo usare:
+
+```powershell
+py -3 updater.py profiles
+py -3 setup.py --profile "C:\percorso\profilo" --channel "https://github.com/fedmor95-alt/fede-modern-thunderbird/releases/latest/download/stable.json" --enable
+```
+
+I test dell'installer includono Windows nel workflow GitHub. Il superamento
+dei test non sostituisce la prova di tema, swipe e calendario nel Thunderbird
+del dispositivo. La configurazione OAuth Meet e Zoom richiede una verifica
+separata dei rispettivi servizi e del consenso dell'utente.
+
+Riferimenti: [Utilita di pianificazione Microsoft](https://learn.microsoft.com/en-us/windows/win32/taskschd/daily-trigger-example--xml-),
+[lock di file su Windows in Python](https://docs.python.org/3/library/msvcrt.html).
+
+### Linux e macOS
+
 Estrarre il kit in una directory privata stabile, non dentro il profilo di posta.
 Servono Python 3.9+, Linux con systemd utente (o macOS con launchd), pgrep e un Thunderbird già avviato
 almeno una volta. Non occorre root. Account e login si configurano separatamente.
@@ -134,7 +172,7 @@ rimangono sui dispositivi: questo canale distribuisce le personalizzazioni.
 
 Gli aggiornamenti dell'app Thunderbird continuano attraverso il suo canale
 abituale; le versioni del pacchetto dichiarano quali versioni principali sono
-state verificate. La 1.0.11 accetta Thunderbird 156–157.
+state verificate. La 1.0.12 accetta Thunderbird 153–157.
 
 ## Distribuzione locale alternativa
 

@@ -5,7 +5,7 @@ import json
 import re
 from pathlib import Path
 import zipfile
-from updater import ALLOWED
+from updater import ALLOWED, read_release
 
 ROOT = Path(__file__).resolve().parent
 
@@ -16,14 +16,21 @@ def build_kits(destination, repository=None, release_dir=None):
     if repository and not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', repository):
         raise ValueError('Repository non valido')
     version = channel['version']
+    release_path = release_dir / channel['archive']
+    if hashlib.sha256(release_path.read_bytes()).hexdigest() != channel['sha256']:
+        raise ValueError('Checksum del canale non valido')
+    manifest, payload = read_release(release_path)
+    if manifest['version'] != version:
+        raise ValueError('Versione del canale diversa dall’archivio')
     common = ['README.md', 'LICENSE', 'VERSION', 'build.py', 'build_kit.py', 'publish.py', 'updater.py', 'setup.py', 'deploy.py',
               'install_macos.py', 'Installa-Mac.command',
-              'test_updater.py', 'test_macos.py', 'test_distribution.py', 'licenses/modern-spark-MIT.txt', 'licenses/snooze-MIT.txt',
+              'install_windows.py', 'Installa-Windows.cmd',
+              'test_updater.py', 'test_macos.py', 'test_windows.py', 'test_distribution.py', 'licenses/modern-spark-MIT.txt', 'licenses/snooze-MIT.txt',
               'releases/stable.json', 'releases/' + channel['archive']]
     common += ['payload/' + name for name in sorted(ALLOWED)]
     destination.mkdir(parents=True, exist_ok=True)
     checksums = []
-    for platform in ['linux', 'mac-beta']:
+    for platform in ['linux', 'mac-beta', 'windows-beta']:
         target = destination / f'fede-modern-{platform}-{version}.zip'
         if target.exists():
             raise ValueError('Kit esistente: usare una nuova destinazione/versione')
@@ -34,7 +41,10 @@ def build_kits(destination, repository=None, release_dir=None):
                 info.external_attr = (0o100755 if name.endswith('.command') else 0o100644) << 16
                 info.compress_type = zipfile.ZIP_DEFLATED
                 source = release_dir / Path(name).name if name.startswith('releases/') else ROOT / name
-                archive.writestr(info, source.read_bytes())
+                content = payload[name[len('payload/'):]] if name.startswith('payload/') else source.read_bytes()
+                if name.endswith('.cmd'):
+                    content = content.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')
+                archive.writestr(info, content)
             if repository:
                 archive.writestr('fede-modern-' + version + '/update-channel.txt',
                                  f'https://github.com/{repository}/releases/latest/download/stable.json\n')
