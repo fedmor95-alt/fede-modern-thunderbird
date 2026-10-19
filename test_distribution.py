@@ -30,7 +30,8 @@ class DistributionTests(unittest.TestCase):
             with zipfile.ZipFile(package) as zipped:
                 manifest = json.loads(zipped.read('manifest.json'))
                 self.assertEqual(manifest['browser_specific_settings']['gecko']['id'], 'fede-day-night@local')
-                self.assertEqual(set(manifest['experiment_apis']), {'dayNight', 'calendarAssist'})
+                self.assertEqual(set(manifest['experiment_apis']), {'dayNight', 'calendarAssist', 'fedeLayout'})
+                self.assertIn('messenger.fedeLayout.init()', zipped.read('background.js').decode())
                 self.assertIn('function parseTitle', zipped.read('calendar-assist/experiment.js').decode())
                 self.assertIn('messenger.calendarAssist.init(config)', zipped.read('background.js').decode())
                 self.assertIn('OAuth2.sys.mjs', zipped.read('calendar-assist/experiment.js').decode())
