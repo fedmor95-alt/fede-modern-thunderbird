@@ -18,12 +18,12 @@ class DistributionTests(unittest.TestCase):
             archive = build.build('1.0.12-test', Path(directory))
             with zipfile.ZipFile(archive) as zipped:
                 release = json.loads(zipped.read('release.json'))
-            self.assertEqual(release['compatibility'], {'min_major': 153, 'max_major': 157})
+            self.assertEqual(release['compatibility'], {'min_major': 153, 'max_major': 158})
 
     def test_theme_and_calendar_share_the_existing_extension_id(self):
         with tempfile.TemporaryDirectory() as directory:
             package = Path(directory) / 'theme.xpi'
-            self.assertEqual(build_calendar_addon.build(package), '1.0.3')
+            self.assertEqual(build_calendar_addon.build(package), '1.0.4')
             first = package.read_bytes()
             build_calendar_addon.build(package)
             self.assertEqual(package.read_bytes(), first)
