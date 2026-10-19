@@ -10,14 +10,25 @@
 <body>
 <main>
   <h1>Fede Modern</h1>
-  <p>Impostazioni del tema e delle videoconferenze nel calendario.</p>
+  <p>Impostazioni del tema, del testo e delle videoconferenze nel calendario.</p>
+  <section aria-labelledby="text-heading">
+    <h2 id="text-heading">Testo dell’interfaccia</h2>
+    <p>Ingrandisce o rimpicciolisce barra laterale, elenco messaggi, menu e finestre. Il testo dei messaggi si regola a parte con Ctrl + e Ctrl −.</p>
+    <div class="font-size" role="group" aria-labelledby="text-heading">
+      <button type="button" id="fontSmaller" aria-label="Testo più piccolo">A−</button>
+      <output id="fontSize" aria-live="polite">13 px</output>
+      <button type="button" id="fontLarger" aria-label="Testo più grande">A+</button>
+      <button type="button" id="fontReset" class="secondary">Dimensione predefinita</button>
+    </div>
+    <p class="hint">Scorciatoie ovunque in Thunderbird: <kbd>Ctrl</kbd>+<kbd>Maiusc</kbd>+<kbd>+</kbd> più grande, <kbd>Ctrl</kbd>+<kbd>Maiusc</kbd>+<kbd>−</kbd> più piccolo, <kbd>Ctrl</kbd>+<kbd>Maiusc</kbd>+<kbd>0</kbd> predefinita. Funziona anche il menu ≡ → Dimensione carattere.</p>
+  </section>
   <h2>Tema giorno e notte</h2>
   <p>Il tema cambia soltanto in Thunderbird. Il desktop resta invariato.</p>
   <form id="settings">
     <label class="toggle"><input id="enabled" type="checkbox"> Pianificazione automatica</label>
-    <div class="time-row"><label for="dayStart">Tema chiaro dalle</label><input id="dayStart" type="time" required value="07:00"></div>
+    <div class="time-row"><label for="dayStart">Tema di sistema dalle</label><input id="dayStart" type="time" required value="07:00"></div>
     <div class="time-row"><label for="nightStart">Tema scuro dalle</label><input id="nightStart" type="time" required value="20:00"></div>
-    <p class="hint">Si usa l’ora locale del computer (<span id="timezone"></span>), compresa l’ora legale. Il cambio avviene entro un minuto, anche dopo la sospensione.</p>
+    <p class="hint">Di giorno Thunderbird segue il tema chiaro o scuro di Windows/Linux; di notte è sempre scuro. Si usa l’ora locale del computer (<span id="timezone"></span>), compresa l’ora legale. Il cambio avviene entro un minuto, anche dopo la sospensione.</p>
     <p class="hint">Mantieni selezionato «Tema di sistema — automatico» in Componenti aggiuntivi e temi. Disattivando la pianificazione, viene ripristinata la preferenza precedente.</p>
     <button type="submit">Salva</button>
     <p id="status" role="status" aria-live="polite"></p>

@@ -23,6 +23,10 @@ normale canale del sistema. Non disabilitare gli aggiornamenti di sicurezza.
   Attività, Chat, Impostazioni) in una barra in fondo alla barra laterale,
   menu completo col tasto destro; Backspace elimina i messaggi come Canc.
   1.0.14: il pulsante della barra laterale risponde al clic anche su Windows.
+- 1.0.15: testo dell'interfaccia regolabile (Ctrl+Maiusc + / − / 0, menu ≡ →
+  Dimensione carattere o Opzioni di Fede Modern); «Esci da Thunderbird» col
+  tasto destro sull'icona nella barra delle applicazioni di Windows; di giorno
+  il tema segue chiaro/scuro del sistema, di notte è sempre scuro.
 - Sidebar unificata; alias visivi Personale/Lavoro per account denominati con
   indirizzi email, indirizzi completi nei tooltip, nomi reali immutati.
 - Account e cartelle raccolti in una sezione espandibile, stati nativi conservati.

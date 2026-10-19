@@ -50,7 +50,7 @@
 
     #composeToolbar2 {
       padding: 8px 18px !important;
-      font-size: 13px !important;
+      font-size: 1rem !important;
     }
 
     #composeToolbar2 .toolbarbutton-1 {
@@ -82,7 +82,7 @@
     #compose-toolbar-menubar2 {
       background: var(--fm-chrome) !important;
       color: var(--fm-text-2) !important;
-      font-size: 12px !important;
+      font-size: 0.9231rem !important;
       border: 0 !important;
       padding-inline: 12px !important;
     }
@@ -147,7 +147,7 @@
     #subjectLabel,
     .address-label-container label {
       color: var(--fm-text-2) !important;
-      font-size: 12px !important;
+      font-size: 0.9231rem !important;
       font-weight: 400 !important;
       margin-inline-end: 10px !important;
     }
@@ -218,7 +218,7 @@
     #extraAddressRowsArea > button {
       min-block-size: 28px;
       border-radius: var(--fm-radius-sm) !important;
-      font-size: 12px !important;
+      font-size: 0.9231rem !important;
     }
 
     #extraAddressRowsArea > .recipient-button {
@@ -228,7 +228,7 @@
     #msgSubject {
       min-block-size: 36px !important;
       padding-inline: 8px !important;
-      font-size: 14px !important;
+      font-size: 1.0769rem !important;
       font-weight: 600 !important;
     }
 
@@ -248,7 +248,7 @@
       gap: 1px !important;
       flex-wrap: wrap !important;
       row-gap: 4px !important;
-      font-size: 12px !important;
+      font-size: 0.9231rem !important;
       border-block-start: 1px solid var(--fm-hairline) !important;
       min-inline-size: 0 !important;
     }
@@ -261,7 +261,7 @@
       min-block-size: 28px !important;
       border-color: transparent !important;
       background-color: transparent !important;
-      font-size: 12px !important;
+      font-size: 0.9231rem !important;
     }
 
     #FormatToolbar > menulist:is(:hover, [open="true"]) {

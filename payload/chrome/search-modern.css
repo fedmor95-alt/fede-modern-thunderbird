@@ -40,7 +40,7 @@
       grid-template-columns: clamp(180px, 20vw, 248px) minmax(0, 1fr) !important;
       background: var(--fs-content) !important;
       color: var(--fs-text) !important;
-      font: 13px/1.5 var(--fs-font) !important;
+      font: 1rem/1.5 var(--fs-font) !important;
     }
     .facets-sidebar {
       background: var(--fs-chrome) !important;
@@ -48,7 +48,7 @@
       padding: 24px 16px !important;
     }
     #filter-header-label {
-      font-size: 16px !important;
+      font-size: 1.2308rem !important;
       font-weight: 700 !important;
       margin-block: 0 18px !important;
     }
@@ -62,9 +62,9 @@
       flex-wrap: wrap !important;
       margin-block: 24px 18px !important;
     }
-    #query-explanation { font-size: 13px !important; }
+    #query-explanation { font-size: 1rem !important; }
     .explanation-fulltext-label, .explanation-query-label {
-      font-size: 19px !important;
+      font-size: 1.4615rem !important;
       font-weight: 700 !important;
       letter-spacing: -.015em;
     }
@@ -75,12 +75,12 @@
       gap: 12px;
       flex-wrap: wrap;
     }
-    .results-message-count { font-size: 13px !important; }
+    .results-message-count { font-size: 1rem !important; }
     .results-message-sort-bar { gap: 4px; }
     .results-message-showall-button, .show-more, .gloda-timeline-button,
     #gloda-facet-view button {
       font-family: var(--fs-font) !important;
-      font-size: 12px !important;
+      font-size: 0.9231rem !important;
       border-radius: 8px !important;
       min-block-size: 30px;
     }
@@ -97,7 +97,7 @@
       outline-offset: 2px;
     }
     .message {
-      font: 13px/1.5 var(--fs-font) !important;
+      font: 1rem/1.5 var(--fs-font) !important;
       color: var(--fs-text) !important;
       margin-block: 6px !important;
       padding: 16px !important;
@@ -114,7 +114,7 @@
     .message-header { margin-block-end: 10px !important; }
     .message-subject {
       color: var(--fs-text) !important;
-      font-size: 16px !important;
+      font-size: 1.2308rem !important;
       font-weight: 600 !important;
       text-decoration: none !important;
       border-radius: 4px;
@@ -131,7 +131,7 @@
       color: var(--fs-text) !important;
     }
     .message-body {
-      font: 13px/1.6 var(--fs-font) !important;
+      font: 1rem/1.6 var(--fs-font) !important;
       color: var(--fs-muted) !important;
       margin-inline-start: 0 !important;
       margin-block: 8px 0 !important;
@@ -159,7 +159,7 @@
     .facet-content .bar:is(:hover, :focus, [selected="true"]) :is(.bar-link, .bar-count) {
       color: var(--fs-text) !important;
     }
-    .facetious h2, .facetious h3 { font-size: 13px !important; font-weight: 600 !important; }
+    .facetious h2, .facetious h3 { font-size: 1rem !important; font-weight: 600 !important; }
     .popup-menu { border-color: var(--fs-hairline) !important; border-radius: 10px !important; }
     .popup-menuitem { font-family: var(--fs-font) !important; padding: 7px 12px !important; }
     #showEmpty > span, #showLoading > span {

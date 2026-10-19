@@ -3,9 +3,12 @@
      spazio corrente (Posta, Calendario, Attività, Rubrica, Chat). Anche F9.
    - Gli spazi stanno in una barra compatta in fondo alla barra laterale.
    - Backspace elimina i messaggi selezionati, come Canc.
+   - Ctrl+Maiusc +/-/0 cambia il testo dell'interfaccia; «Esci da Thunderbird»
+     nel menu dell'icona sulla barra delle applicazioni di Windows.
    Nessun dato di posta viene modificato: solo interfaccia. */
 var {ExtensionCommon} = ChromeUtils.importESModule("resource://gre/modules/ExtensionCommon.sys.mjs");
 var {ExtensionSupport} = ChromeUtils.importESModule("resource:///modules/ExtensionSupport.sys.mjs");
+var {AppConstants} = ChromeUtils.importESModule("resource://gre/modules/AppConstants.sys.mjs");
 
 const FM_LAYOUT_LISTENER = "fede-modern-layout";
 const FM_XHTML = "http://www.w3.org/1999/xhtml";
@@ -312,6 +315,16 @@ var FedeLayoutWindow = class {
       if (this.toggleSidebar()) event.preventDefault();
       return;
     }
+    // Testo dell'interfaccia: Ctrl+Maiusc + / - / 0 (anche tastierino).
+    // Si usa event.code: con la tastiera italiana Maiusc cambia il carattere.
+    if (event.ctrlKey && event.shiftKey && !event.altKey && !event.metaKey) {
+      const step = {Equal: 1, BracketRight: 1, NumpadAdd: 1, Minus: -1, Slash: -1, NumpadSubtract: -1, Digit0: 0, Numpad0: 0}[event.code];
+      if (step !== undefined) {
+        fedeChangeFontSize(step);
+        event.preventDefault();
+        return;
+      }
+    }
     if (event.key !== "Backspace" || !plain) return;
     if (!FM_MAIL_MODES.has(this.tabmail?.currentTabInfo?.mode?.name)) return;
     const target = event.composedTarget || event.originalTarget;
@@ -372,6 +385,100 @@ var FedeLayoutWindow = class {
 var fedeLayoutWindows = new Map();
 var fedeLayoutRegistered = false;
 
+/* --- Dimensione del testo dell'interfaccia --------------------------------
+   Usa la preferenza nativa mail.uifontsize (la stessa del menu ≡ → Dimensione
+   carattere). Il tema esprime i caratteri in rem, quindi scala con essa. */
+const FM_FONT_BASE = 13;
+var {UIFontSize} = ChromeUtils.importESModule("resource:///modules/UIFontSize.sys.mjs");
+
+function fedeFontSize() {
+  return Services.prefs.getIntPref("mail.uifontsize", 0) || FM_FONT_BASE;
+}
+
+function fedeSetFontSize(size) {
+  const value = Math.min(UIFontSize.MAX_VALUE, Math.max(UIFontSize.MIN_VALUE, Math.round(size)));
+  Services.prefs.setIntPref("mail.uifontsize", value);
+  return value;
+}
+
+function fedeChangeFontSize(step) {
+  return fedeSetFontSize(step === 0 ? FM_FONT_BASE : fedeFontSize() + step);
+}
+
+function fedeInitFontSize() {
+  // Il tema è disegnato su 13 px: senza una scelta dell'utente tutti i
+  // dispositivi partono dalla stessa base invece che dal carattere di sistema.
+  if (!Services.prefs.getIntPref("mail.uifontsize", 0)) Services.prefs.setIntPref("mail.uifontsize", FM_FONT_BASE);
+}
+
+/* --- Esci da Thunderbird dal tasto destro sull'icona ------------------------
+   Windows: voce nella jump list della barra delle applicazioni. La voce avvia
+   thunderbird.exe -fede-modern-quit, che l'istanza aperta riceve e chiude.
+   Linux: lo stesso argomento si può usare in un'azione del file .desktop. */
+const FM_QUIT_FLAG = "fede-modern-quit";
+const FM_QUIT_CID = Components.ID("{6f0d2c8e-3a51-4c8e-9d1e-5b7f2a9c4e10}");
+const FM_QUIT_CONTRACT = "@fedemodern/quit-command-line-handler;1";
+var fedeQuitHandler = {
+  handle(commandLine) {
+    if (!commandLine.handleFlag(FM_QUIT_FLAG, false)) return;
+    commandLine.preventDefault = true;
+    Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit);
+  },
+  helpInfo: "  -fede-modern-quit   Chiude Thunderbird (Fede Modern).\n",
+  QueryInterface: ChromeUtils.generateQI(["nsICommandLineHandler"]),
+};
+var fedeQuitFactory = {
+  createInstance(iid) {
+    return fedeQuitHandler.QueryInterface(iid);
+  },
+  QueryInterface: ChromeUtils.generateQI(["nsIFactory"]),
+};
+var fedeQuitTask = {
+  title: "Esci da Thunderbird",
+  description: "Chiude del tutto Thunderbird",
+  args: ["-" + FM_QUIT_FLAG],
+  iconIndex: 0,
+};
+
+var {setTimeout: fedeSetTimeout} = ChromeUtils.importESModule("resource://gre/modules/Timer.sys.mjs");
+
+// La jump list di Thunderbird si prepara dopo l'avvio: si riprova per un minuto.
+function fedeJumpList(change, attempt = 0) {
+  if (AppConstants.platform !== "win") return;
+  try {
+    const {WinTaskbarJumpList} = ChromeUtils.importESModule("resource:///modules/WindowsJumpLists.sys.mjs");
+    const tasks = WinTaskbarJumpList._tasks;
+    if (!Array.isArray(tasks) || !WinTaskbarJumpList._builder) {
+      if (attempt < 30) fedeSetTimeout(() => fedeJumpList(change, attempt + 1), 2000);
+      return;
+    }
+    if (change(tasks)) WinTaskbarJumpList.update();
+  } catch (error) {
+    console.error("[fede-layout] jump list", error);
+  }
+}
+
+function fedeRegisterQuit() {
+  const registrar = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
+  if (!registrar.isCIDRegistered(FM_QUIT_CID)) {
+    registrar.registerFactory(FM_QUIT_CID, "Fede Modern quit", FM_QUIT_CONTRACT, fedeQuitFactory);
+  }
+  // "a-" fa passare il gestore prima di quello che aprirebbe una finestra.
+  Services.catMan.addCategoryEntry("command-line-handler", "a-fede-modern-quit", FM_QUIT_CONTRACT, false, true);
+  fedeJumpList(tasks => fedeLayoutRegistered && !tasks.includes(fedeQuitTask) && !!tasks.push(fedeQuitTask));
+}
+
+function fedeUnregisterQuit() {
+  Services.catMan.deleteCategoryEntry("command-line-handler", "a-fede-modern-quit", false);
+  const registrar = Components.manager.QueryInterface(Ci.nsIComponentRegistrar);
+  if (registrar.isCIDRegistered(FM_QUIT_CID)) registrar.unregisterFactory(FM_QUIT_CID, fedeQuitFactory);
+  fedeJumpList(tasks => {
+    const index = tasks.indexOf(fedeQuitTask);
+    if (index >= 0) tasks.splice(index, 1);
+    return index >= 0;
+  });
+}
+
 this.fedeLayout = class extends ExtensionCommon.ExtensionAPI {
   getAPI() {
     return {
@@ -379,6 +486,12 @@ this.fedeLayout = class extends ExtensionCommon.ExtensionAPI {
         async init() {
           if (fedeLayoutRegistered) return;
           fedeLayoutRegistered = true;
+          fedeInitFontSize();
+          try {
+            fedeRegisterQuit();
+          } catch (error) {
+            console.error("[fede-layout] quit", error);
+          }
           ExtensionSupport.registerWindowListener(FM_LAYOUT_LISTENER, {
             chromeURLs: ["chrome://messenger/content/messenger.xhtml"],
             onLoadWindow(win) {
@@ -394,6 +507,12 @@ this.fedeLayout = class extends ExtensionCommon.ExtensionAPI {
             },
           });
         },
+        async getFontSize() {
+          return {size: fedeFontSize(), base: FM_FONT_BASE, min: UIFontSize.MIN_VALUE, max: UIFontSize.MAX_VALUE};
+        },
+        async setFontSize(size) {
+          return fedeSetFontSize(size);
+        },
       },
     };
   }
@@ -402,6 +521,7 @@ this.fedeLayout = class extends ExtensionCommon.ExtensionAPI {
     if (isAppShutdown) return;
     if (!fedeLayoutRegistered) return;
     fedeLayoutRegistered = false;
+    fedeUnregisterQuit();
     ExtensionSupport.unregisterWindowListener(FM_LAYOUT_LISTENER);
     for (const layout of fedeLayoutWindows.values()) layout.destroy();
     fedeLayoutWindows.clear();

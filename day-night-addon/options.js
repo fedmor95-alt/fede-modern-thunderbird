@@ -66,3 +66,28 @@ for (const [provider, buttonId, idField] of [["google", "connectGoogle", "google
   });
 }
 loadVideo().catch(error => {videoStatus.textContent = error.message;});
+
+const fontOutput = document.getElementById("fontSize");
+const fontButtons = {
+  smaller: document.getElementById("fontSmaller"),
+  larger: document.getElementById("fontLarger"),
+  reset: document.getElementById("fontReset"),
+};
+let font = {size: 13, base: 13, min: 9, max: 30};
+function showFont() {
+  fontOutput.textContent = `${font.size} px`;
+  fontButtons.smaller.disabled = font.size <= font.min;
+  fontButtons.larger.disabled = font.size >= font.max;
+  fontButtons.reset.disabled = font.size === font.base;
+}
+async function setFont(size) {
+  font.size = await messenger.fedeLayout.setFontSize(size);
+  showFont();
+}
+fontButtons.smaller.addEventListener("click", () => setFont(font.size - 1));
+fontButtons.larger.addEventListener("click", () => setFont(font.size + 1));
+fontButtons.reset.addEventListener("click", () => setFont(font.base));
+messenger.fedeLayout.getFontSize().then(value => {
+  font = value;
+  showFont();
+}).catch(error => {fontOutput.textContent = error.message;});

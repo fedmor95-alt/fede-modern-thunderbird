@@ -7,6 +7,23 @@
         "type": "function",
         "async": true,
         "parameters": []
+      },
+      {
+        "name": "getFontSize",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "setFontSize",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "size",
+            "type": "integer"
+          }
+        ]
       }
     ]
   }

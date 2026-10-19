@@ -10,7 +10,9 @@ let pending = Promise.resolve();
 
 async function syncSchedule() {
   const settings = validateSettings(await messenger.storage.local.get(DEFAULTS));
-  await messenger.dayNight.applyMode(modeAt(new Date(), settings));
+  // Di giorno segue il tema di Windows/Linux; di notte è sempre scuro.
+  const mode = modeAt(new Date(), settings);
+  await messenger.dayNight.applyMode(mode === "light" ? "system" : mode);
   if (!settings.enabled) {
     await messenger.alarms.clear(ALARM);
   } else if (!(await messenger.alarms.get(ALARM))) {
