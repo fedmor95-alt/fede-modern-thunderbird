@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "Fede Modern — tema e calendario",
-  "version": "1.0.3",
-  "description": "Tema giorno/notte, creazione eventi dal titolo e videoconferenze Meet/Zoom con OAuth.",
+  "version": "1.0.4",
+  "description": "Tema giorno/notte, barra laterale e spazi come in Mail, creazione eventi dal titolo e videoconferenze Meet/Zoom con OAuth.",
   "author": "Fede Modern",
   "browser_specific_settings": {
     "gecko": {
@@ -10,24 +10,58 @@
       "strict_min_version": "156.0"
     }
   },
-  "permissions": ["alarms", "storage"],
-  "background": {"page": "background.html"},
-  "options_ui": {"page": "options.html", "open_in_tab": true},
+  "permissions": [
+    "alarms",
+    "storage"
+  ],
+  "background": {
+    "page": "background.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "experiment_apis": {
     "dayNight": {
       "schema": "experiment/schema.json",
       "parent": {
-        "scopes": ["addon_parent"],
-        "paths": [["dayNight"]],
+        "scopes": [
+          "addon_parent"
+        ],
+        "paths": [
+          [
+            "dayNight"
+          ]
+        ],
         "script": "experiment/api.js"
       }
     },
     "calendarAssist": {
       "schema": "calendar-assist/schema.json",
       "parent": {
-        "scopes": ["addon_parent"],
-        "paths": [["calendarAssist"]],
+        "scopes": [
+          "addon_parent"
+        ],
+        "paths": [
+          [
+            "calendarAssist"
+          ]
+        ],
         "script": "calendar-assist/experiment.js"
+      }
+    },
+    "fedeLayout": {
+      "schema": "experiment/layout-schema.json",
+      "parent": {
+        "scopes": [
+          "addon_parent"
+        ],
+        "paths": [
+          [
+            "fedeLayout"
+          ]
+        ],
+        "script": "experiment/layout.js"
       }
     }
   }

@@ -17,7 +17,7 @@ def build(version, destination):
     manifest = {'product': 'fede-modern', 'version': version,
                 # Thunderbird 153 is the current ESR line used on the supported
                 # Windows installation. Keep later tested versions accepted too.
-                'compatibility': {'min_major': 153, 'max_major': 157},
+                'compatibility': {'min_major': 153, 'max_major': 158},
                 'files': {name: hashlib.sha256(data).hexdigest() for name, data in payload.items()}}
     destination.mkdir(parents=True, exist_ok=True)
     output = destination / ('fede-modern-' + version + '.zip')

@@ -297,3 +297,144 @@
     opacity: 1 !important;
   }
 }
+
+/* Barra laterale come in Mail di Apple (1.0.13).
+   In alto a sinistra: mostra/nasconde la barra laterale dello spazio (F9).
+   Gli spazi passano in una barra compatta in fondo alla barra laterale. */
+:root[data-fm-layout] #spacesPinnedButton,
+:root[data-fm-layout] #spacesToolbarReveal {
+  display: none !important;
+}
+#fm-sidebar-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 auto !important;
+  inline-size: 34px !important;
+  block-size: 30px !important;
+  min-inline-size: 34px !important;
+  padding: 0 !important;
+  margin-block: auto !important;
+  margin-inline: 6px 2px !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: var(--fm-text-2) !important;
+}
+#fm-sidebar-toggle > span {
+  inline-size: 18px;
+  block-size: 18px;
+  background-color: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath fill-rule='evenodd' d='M4.5 2.5h9a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3zm0 1.4A1.6 1.6 0 0 0 2.9 5.5v7a1.6 1.6 0 0 0 1.6 1.6H6.6V3.9zm3.5 0v10.2h5.5a1.6 1.6 0 0 0 1.6-1.6v-7a1.6 1.6 0 0 0-1.6-1.6z'/%3E%3Cpath d='M3.9 6.1h1.6v1.2H3.9zm0 2.3h1.6v1.2H3.9zm0 2.3h1.6v1.2H3.9z'/%3E%3C/svg%3E") center / 18px no-repeat;
+}
+#fm-sidebar-toggle:not([disabled]):hover {
+  background: var(--fm-hover) !important;
+  color: var(--fm-text) !important;
+}
+#fm-sidebar-toggle:not([disabled]):active {
+  background: var(--fm-side-selected) !important;
+}
+#fm-sidebar-toggle[disabled] {
+  opacity: 0.35 !important;
+}
+#fm-sidebar-toggle:focus-visible {
+  outline: 2px solid var(--fm-accent) !important;
+  outline-offset: -2px !important;
+}
+
+/* La barra degli spazi resta sempre visibile in fondo; sopra scorre l'elenco. */
+#folderPane > #folderTree,
+#booksPane > #books {
+  flex: 1 1 auto !important;
+  min-block-size: 0 !important;
+}
+#booksPane.collapsed-by-splitter {
+  display: none !important;
+}
+.fm-space-dock {
+  display: flex;
+  align-items: center;
+  flex: none;
+  gap: 2px;
+  margin: 6px 10px 10px;
+  padding: 3px;
+  border-radius: 11px;
+  background: var(--fm-hover);
+  box-shadow: inset 0 0 0 0.5px var(--fm-hairline);
+  font: 12px var(--fm-font);
+  --fm-dock-selected: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  .fm-space-dock { --fm-dock-selected: rgba(255, 255, 255, 0.16); }
+}
+#calSidebar > .fm-space-dock,
+#listPaneBox > .fm-space-dock {
+  margin-block-start: auto;
+}
+.fm-space-spacer {
+  flex: 1 1 auto;
+  min-inline-size: 2px;
+}
+.fm-space-button {
+  appearance: none !important;
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 1 32px !important;
+  inline-size: 32px !important;
+  min-inline-size: 24px !important;
+  max-inline-size: 32px !important;
+  block-size: 28px !important;
+  min-block-size: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: var(--fm-text-2) !important;
+  box-shadow: none !important;
+  line-height: 0 !important;
+  transition: background-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+}
+.fm-space-button[hidden] {
+  display: none !important;
+}
+.fm-space-button > img {
+  inline-size: 16px;
+  block-size: 16px;
+  pointer-events: none;
+  -moz-context-properties: fill, stroke, stroke-opacity;
+  fill: color-mix(in srgb, currentColor 20%, transparent);
+  stroke: currentColor;
+}
+.fm-space-button:hover {
+  background: var(--fm-hover) !important;
+  color: var(--fm-text) !important;
+}
+.fm-space-button:active {
+  background: var(--fm-side-selected) !important;
+}
+.fm-space-button[aria-current="page"] {
+  background: var(--fm-dock-selected) !important;
+  color: var(--fm-accent) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.06) !important;
+}
+.fm-space-button:focus-visible {
+  outline: 2px solid var(--fm-accent) !important;
+  outline-offset: -2px !important;
+}
+.fm-space-button.has-badge::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 4px;
+  inset-inline-end: 5px;
+  inline-size: 7px;
+  block-size: 7px;
+  border-radius: 50%;
+  background: #ff3b30;
+  box-shadow: 0 0 0 1.5px var(--fm-chrome);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fm-space-button { transition: none; }
+}

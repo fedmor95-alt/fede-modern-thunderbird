@@ -9,7 +9,7 @@ Release 1.0.12: calendario con interpretazione locale del campo Titolo e
 creazione diretta di link Meet/Zoom tramite OAuth, oltre al canale pubblico di
 aggiornamento. Include il calendario e
 l'editor eventi della 1.0.7; contatori
-account unificati esclusivamente non letti. Compatibile con Thunderbird **153–157**;
+account unificati esclusivamente non letti. Compatibile con Thunderbird **153–158**;
 la verifica grafica su Windows resta parte della beta. Supporto installer **macOS beta**, non ancora provato
 su un Mac reale; non è un DMG né una build modificata di Thunderbird. Il controllo
 blocca altre versioni fino a verifica esplicita; aggiornare Thunderbird con il
@@ -18,6 +18,10 @@ normale canale del sistema. Non disabilitare gli aggiornamenti di sicurezza.
 ## Contenuto
 
 - Tema chiaro/scuro, compositore e ricerca unica.
+- 1.0.13: pulsante in alto a sinistra (o F9) che mostra/nasconde la barra
+  laterale come in Mail di Apple; gli spazi (Posta, Calendario, Rubrica,
+  Attività, Chat, Impostazioni) in una barra in fondo alla barra laterale,
+  menu completo col tasto destro; Backspace elimina i messaggi come Canc.
 - Sidebar unificata; alias visivi Personale/Lavoro per account denominati con
   indirizzi email, indirizzi completi nei tooltip, nomi reali immutati.
 - Account e cartelle raccolti in una sezione espandibile, stati nativi conservati.
@@ -172,7 +176,7 @@ rimangono sui dispositivi: questo canale distribuisce le personalizzazioni.
 
 Gli aggiornamenti dell'app Thunderbird continuano attraverso il suo canale
 abituale; le versioni del pacchetto dichiarano quali versioni principali sono
-state verificate. La 1.0.12 accetta Thunderbird 153–157.
+state verificate. La 1.0.13 accetta Thunderbird 153–158.
 
 ## Distribuzione locale alternativa
 
