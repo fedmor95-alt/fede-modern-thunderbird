@@ -320,6 +320,9 @@
   border-radius: 8px !important;
   background: transparent !important;
   color: var(--fm-text-2) !important;
+  /* La barra in alto è un'area di trascinamento della finestra (Windows):
+     senza questo il clic sposta la finestra invece di premere il pulsante. */
+  -moz-window-dragging: no-drag !important;
 }
 #fm-sidebar-toggle > span {
   inline-size: 18px;

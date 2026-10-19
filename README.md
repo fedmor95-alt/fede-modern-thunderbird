@@ -22,6 +22,7 @@ normale canale del sistema. Non disabilitare gli aggiornamenti di sicurezza.
   laterale come in Mail di Apple; gli spazi (Posta, Calendario, Rubrica,
   Attività, Chat, Impostazioni) in una barra in fondo alla barra laterale,
   menu completo col tasto destro; Backspace elimina i messaggi come Canc.
+  1.0.14: il pulsante della barra laterale risponde al clic anche su Windows.
 - Sidebar unificata; alias visivi Personale/Lavoro per account denominati con
   indirizzi email, indirizzi completi nei tooltip, nomi reali immutati.
 - Account e cartelle raccolti in una sezione espandibile, stati nativi conservati.
