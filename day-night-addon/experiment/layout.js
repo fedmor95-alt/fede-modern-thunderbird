@@ -418,11 +418,37 @@ function fedeInitFontSize() {
 const FM_QUIT_FLAG = "fede-modern-quit";
 const FM_QUIT_CID = Components.ID("{6f0d2c8e-3a51-4c8e-9d1e-5b7f2a9c4e10}");
 const FM_QUIT_CONTRACT = "@fedemodern/quit-command-line-handler;1";
+// Con «chiudi nell'area di notifica» la X nasconde la finestra. Un nuovo avvio
+// (clic sull'icona nella barra o nel menu Start) arriva all'istanza aperta ma
+// Thunderbird non la rende di nuovo visibile: la si mostra qui.
+function fedeShowHiddenMailWindow() {
+  if (AppConstants.platform !== "win") return;
+  const win = Services.wm.getMostRecentWindow("mail:3pane");
+  if (!win) return;
+  try {
+    // showWindow aggiorna lo stato dell'icona nell'area di notifica; da solo
+    // non rende visibile la finestra, quindi si forza anche la visibilità.
+    Cc["@mozilla.org/messenger/osintegration;1"]
+      .getService(Ci.nsIMessengerWindowsIntegration)
+      .showWindow(win);
+  } catch (error) {
+    console.error("[fede-layout] mostra finestra", error);
+  }
+  const baseWindow = win.docShell.treeOwner.QueryInterface(Ci.nsIBaseWindow);
+  baseWindow.visibility = false;
+  baseWindow.visibility = true;
+  if (win.windowState === win.STATE_MINIMIZED) win.restore();
+  win.focus();
+}
+
 var fedeQuitHandler = {
   handle(commandLine) {
-    if (!commandLine.handleFlag(FM_QUIT_FLAG, false)) return;
-    commandLine.preventDefault = true;
-    Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit);
+    if (commandLine.handleFlag(FM_QUIT_FLAG, false)) {
+      commandLine.preventDefault = true;
+      Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit);
+      return;
+    }
+    if (commandLine.state !== Ci.nsICommandLine.STATE_INITIAL_LAUNCH) fedeShowHiddenMailWindow();
   },
   helpInfo: "  -fede-modern-quit   Chiude Thunderbird (Fede Modern).\n",
   QueryInterface: ChromeUtils.generateQI(["nsICommandLineHandler"]),

@@ -27,6 +27,8 @@ normale canale del sistema. Non disabilitare gli aggiornamenti di sicurezza.
   Dimensione carattere o Opzioni di Fede Modern); «Esci da Thunderbird» col
   tasto destro sull'icona nella barra delle applicazioni di Windows; di giorno
   il tema segue chiaro/scuro del sistema, di notte è sempre scuro.
+  1.0.16: con «chiudi nell'area di notifica» attivo, il clic sull'icona nella
+  barra delle applicazioni fa ricomparire la finestra nascosta.
 - Sidebar unificata; alias visivi Personale/Lavoro per account denominati con
   indirizzi email, indirizzi completi nei tooltip, nomi reali immutati.
 - Account e cartelle raccolti in una sezione espandibile, stati nativi conservati.
