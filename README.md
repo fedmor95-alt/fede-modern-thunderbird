@@ -58,6 +58,8 @@ normale canale del sistema. Non disabilitare gli aggiornamenti di sicurezza.
   a Google/Zoom è **separata su ogni dispositivo** e non è pre-autorizzata nel kit.
   Cambiare in seguito ora/titolo dell'evento Thunderbird non modifica
   automaticamente la riunione già creata sul servizio video.
+- 1.0.19: Invio e i suggerimenti della barra di ricerca (persone, etichette) mostrano
+  i risultati nella lista dei messaggi invece di aprire la scheda "Ricerca".
 
 Il kit non contiene account, password, token OAuth, email, database, storage snooze o font
 Apple. Usa SF Pro se già installato legittimamente nel sistema; altrimenti il

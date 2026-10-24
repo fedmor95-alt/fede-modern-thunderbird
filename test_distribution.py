@@ -23,7 +23,7 @@ class DistributionTests(unittest.TestCase):
     def test_theme_and_calendar_share_the_existing_extension_id(self):
         with tempfile.TemporaryDirectory() as directory:
             package = Path(directory) / 'theme.xpi'
-            self.assertEqual(build_calendar_addon.build(package), '1.0.8')
+            self.assertEqual(build_calendar_addon.build(package), '1.0.9')
             first = package.read_bytes()
             build_calendar_addon.build(package)
             self.assertEqual(package.read_bytes(), first)

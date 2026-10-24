@@ -74,6 +74,39 @@ var FedeSearchWindow = class {
     };
     for (const type of ["search", "autocomplete", "input"]) this.doc.addEventListener(type, this.onBarEvent, true);
     this.doc.addEventListener("keydown", this.onKeydown, true);
+    // Ogni via che aprirebbe la scheda "Ricerca" (suggerimenti, rubrica, Invio
+    // dalla tendina) porta invece i risultati nella lista dei messaggi.
+    const tabmail = fsWaive(this.tabmail);
+    if (tabmail?.openTab) {
+      this.tabmailHooked = tabmail;
+      this.nativeOpenTab = tabmail.openTab;
+      const native = this.nativeOpenTab;
+      const self = this;
+      tabmail.openTab = function (type, args, ...rest) {
+        if ((type === "glodaFacet" || type === "glodaTableList") && (args?.searcher || args?.query)) {
+          try {
+            self.redirect(args);
+            return null;
+          } catch (error) {
+            console.error("[fede-search]", error);
+          }
+        }
+        return native.call(this, type, args, ...rest);
+      };
+    }
+  }
+
+  redirect(args) {
+    const input = this.barInput();
+    if (args.searcher) {
+      const text = String(args.searcher.searchString || input?.value || "");
+      if (input) input.value = text;
+      this.run(text).catch(error => console.error("[fede-search]", error));
+      return;
+    }
+    const raw = input?.value?.trim() || this.search?.parsed?.raw || "";
+    if (input) input.value = raw;
+    this.collect(raw, args.query).catch(error => console.error("[fede-search]", error));
   }
 
   get tabmail() {
@@ -159,6 +192,24 @@ var FedeSearchWindow = class {
     });
     if (token !== this.token) return;
     this.render(parsed, results.filter(result => result.item.folderMessage), false);
+  }
+
+  // Risultati di una query già pronta (persona o etichetta scelta dai suggerimenti).
+  async collect(raw, query) {
+    const parsed = fsParse(raw);
+    const token = ++this.token;
+    const items = await new Promise(resolve => {
+      query.getCollection({
+        onItemsAdded() {},
+        onItemsModified() {},
+        onItemsRemoved() {},
+        onQueryCompleted(collection) {
+          resolve(collection.items);
+        },
+      });
+    });
+    if (token !== this.token) return;
+    this.render(parsed, items.filter(item => item.folderMessage).map(item => ({item, score: 0})), false);
   }
 
   matches(result, parsed, options) {
@@ -466,6 +517,7 @@ var FedeSearchWindow = class {
     this.close({keepInput: true});
     for (const type of ["search", "autocomplete", "input"]) this.doc.removeEventListener(type, this.onBarEvent, true);
     this.doc.removeEventListener("keydown", this.onKeydown, true);
+    if (this.tabmailHooked) this.tabmailHooked.openTab = this.nativeOpenTab;
   }
 };
 
