@@ -441,3 +441,72 @@
 @media (prefers-reduced-motion: reduce) {
   .fm-space-button { transition: none; }
 }
+
+/* Avviso «Annulla» dopo eliminazione, archiviazione o spostamento (1.0.17). */
+#fm-undo-toast {
+  position: fixed;
+  inset-inline-start: 50%;
+  inset-block-end: 22px;
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 6px 6px 16px;
+  border-radius: 12px;
+  background: rgba(30, 30, 32, 0.94);
+  color: #f5f5f7;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+  font: 500 0.9231rem var(--fm-font);
+  transform: translate(-50%, 0);
+  -moz-window-dragging: no-drag;
+}
+#fm-undo-toast[hidden] {
+  display: none;
+}
+#fm-undo-toast.fm-undo-visible {
+  animation: fm-undo-in 160ms ease-out;
+}
+@keyframes fm-undo-in {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+#fm-undo-toast .fm-undo-text {
+  margin-inline-end: 8px;
+  white-space: nowrap;
+}
+#fm-undo-toast button {
+  appearance: none !important;
+  min-inline-size: 0 !important;
+  min-block-size: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  font: inherit !important;
+}
+#fm-undo-toast .fm-undo-button {
+  padding: 5px 12px !important;
+  color: #64d2ff !important;
+  font-weight: 600 !important;
+}
+#fm-undo-toast .fm-undo-close {
+  inline-size: 26px !important;
+  block-size: 26px !important;
+  padding: 0 !important;
+  opacity: 0.6;
+  font-size: 1.2308rem !important;
+  line-height: 1 !important;
+}
+#fm-undo-toast button:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  opacity: 1;
+}
+#fm-undo-toast button:focus-visible {
+  outline: 2px solid #64d2ff !important;
+  outline-offset: -2px !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  #fm-undo-toast.fm-undo-visible { animation: none; }
+}

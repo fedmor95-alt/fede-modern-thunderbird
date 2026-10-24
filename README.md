@@ -29,6 +29,9 @@ normale canale del sistema. Non disabilitare gli aggiornamenti di sicurezza.
   il tema segue chiaro/scuro del sistema, di notte è sempre scuro.
   1.0.16: con «chiudi nell'area di notifica» attivo, il clic sull'icona nella
   barra delle applicazioni fa ricomparire la finestra nascosta.
+- 1.0.17: Annulla come in Mail. Ctrl+Z ripristina eliminazioni, archiviazioni
+  e spostamenti ovunque sia il focus; dopo ogni azione compare l'avviso
+  «Messaggio eliminato · Annulla» per qualche secondo.
 - Sidebar unificata; alias visivi Personale/Lavoro per account denominati con
   indirizzi email, indirizzi completi nei tooltip, nomi reali immutati.
 - Account e cartelle raccolti in una sezione espandibile, stati nativi conservati.

@@ -2,7 +2,8 @@
    - Il pulsante in alto a sinistra mostra/nasconde la barra laterale dello
      spazio corrente (Posta, Calendario, Attività, Rubrica, Chat). Anche F9.
    - Gli spazi stanno in una barra compatta in fondo alla barra laterale.
-   - Backspace elimina i messaggi selezionati, come Canc.
+   - Backspace elimina i messaggi selezionati, come Canc; Ctrl+Z e l'avviso
+     «Annulla» ripristinano eliminazioni, archiviazioni e spostamenti.
    - Ctrl+Maiusc +/-/0 cambia il testo dell'interfaccia; «Esci da Thunderbird»
      nel menu dell'icona sulla barra delle applicazioni di Windows.
    Nessun dato di posta viene modificato: solo interfaccia. */
@@ -40,6 +41,12 @@ var FedeLayoutWindow = class {
       }, 0);
     };
     this.onKey = event => this.handleKey(event);
+    this.onInput = event => {
+      if (!event.isTrusted) return;
+      fedeLastUserInput = Date.now();
+      // Una nuova azione dell'utente riattiva l'avviso dopo un Annulla.
+      fedeSuppressToastUntil = 0;
+    };
     this.tabMonitor = {
       monitorName: "fedeModernLayout",
       onTabTitleChanged() {},
@@ -51,6 +58,8 @@ var FedeLayoutWindow = class {
     };
     this.observer = new win.MutationObserver(this.queue);
     win.addEventListener("keydown", this.onKey);
+    win.addEventListener("keydown", this.onInput, true);
+    win.addEventListener("pointerdown", this.onInput, true);
     // Pane splitters, new tabs and lazy documents all bubble to the window.
     for (const type of ["load", "splitter-collapsed", "splitter-expanded"]) {
       win.addEventListener(type, this.queue, true);
@@ -297,6 +306,64 @@ var FedeLayoutWindow = class {
     }
   }
 
+  /* --- Annulla ---------------------------------------------------------- */
+
+  undo() {
+    // Annulla di Thunderbird vive nella finestra principale, non nella scheda.
+    const win = fmWaive(this.win);
+    if (!win.messenger?.canUndo()) return false;
+    fedeSuppressToastUntil = Date.now() + 3000;
+    win.messenger.undo(win.msgWindow);
+    this.hideToast();
+    return true;
+  }
+
+  showToast(text) {
+    let toast = this.doc.getElementById("fm-undo-toast");
+    if (!toast) {
+      toast = this.doc.createElementNS(FM_XHTML, "div");
+      toast.id = "fm-undo-toast";
+      toast.setAttribute("role", "status");
+      toast.setAttribute("aria-live", "polite");
+      const label = this.doc.createElementNS(FM_XHTML, "span");
+      label.className = "fm-undo-text";
+      const button = this.doc.createElementNS(FM_XHTML, "button");
+      button.type = "button";
+      button.className = "fm-undo-button";
+      button.textContent = "Annulla";
+      button.title = "Annulla (Ctrl+Z)";
+      button.addEventListener("click", () => this.undo());
+      const close = this.doc.createElementNS(FM_XHTML, "button");
+      close.type = "button";
+      close.className = "fm-undo-close";
+      close.setAttribute("aria-label", "Chiudi");
+      close.textContent = "×";
+      close.addEventListener("click", () => this.hideToast());
+      toast.append(label, button, close);
+      toast.addEventListener("mouseenter", () => this.win.clearTimeout(this.toastTimer));
+      toast.addEventListener("mouseleave", () => this.scheduleHideToast());
+      (this.doc.body || this.doc.documentElement).append(toast);
+    }
+    toast.querySelector(".fm-undo-text").textContent = text;
+    toast.hidden = false;
+    toast.classList.add("fm-undo-visible");
+    this.scheduleHideToast();
+  }
+
+  scheduleHideToast() {
+    this.win.clearTimeout(this.toastTimer);
+    this.toastTimer = this.win.setTimeout(() => this.hideToast(), 6000);
+  }
+
+  hideToast() {
+    this.win.clearTimeout(this.toastTimer);
+    const toast = this.doc.getElementById("fm-undo-toast");
+    if (toast) {
+      toast.classList.remove("fm-undo-visible");
+      toast.hidden = true;
+    }
+  }
+
   /* --- Tastiera -------------------------------------------------------- */
 
   isEditable(node) {
@@ -324,6 +391,13 @@ var FedeLayoutWindow = class {
         event.preventDefault();
         return;
       }
+    }
+    if ((event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === "z") {
+      const target = event.composedTarget || event.originalTarget;
+      if (FM_MAIL_MODES.has(this.tabmail?.currentTabInfo?.mode?.name) && !this.isEditable(target) && this.undo()) {
+        event.preventDefault();
+      }
+      return;
     }
     if (event.key !== "Backspace" || !plain) return;
     if (!FM_MAIL_MODES.has(this.tabmail?.currentTabInfo?.mode?.name)) return;
@@ -368,6 +442,10 @@ var FedeLayoutWindow = class {
     if (this.timer !== null) this.win.clearTimeout(this.timer);
     this.observer.disconnect();
     this.win.removeEventListener("keydown", this.onKey);
+    this.win.removeEventListener("keydown", this.onInput, true);
+    this.win.removeEventListener("pointerdown", this.onInput, true);
+    if (this.toastTimer) this.win.clearTimeout(this.toastTimer);
+    this.doc.getElementById("fm-undo-toast")?.remove();
     for (const type of ["load", "splitter-collapsed", "splitter-expanded"]) {
       this.win.removeEventListener(type, this.queue, true);
     }
@@ -384,6 +462,31 @@ var FedeLayoutWindow = class {
 
 var fedeLayoutWindows = new Map();
 var fedeLayoutRegistered = false;
+var fedeLastUserInput = 0;
+var fedeSuppressToastUntil = 0;
+var {MailServices: fedeMailServices} = ChromeUtils.importESModule("resource:///modules/MailServices.sys.mjs");
+
+// Avviso «Annulla» solo per spostamenti fatti a mano: filtri, Snooze e
+// sincronizzazioni in background non mostrano nulla.
+var fedeMoveListener = {
+  msgsMoveCopyCompleted(move, srcMessages, destFolder) {
+    if (!move || Date.now() - fedeLastUserInput > 3000 || Date.now() < fedeSuppressToastUntil) return;
+    const count = srcMessages?.length || 0;
+    if (!count) return;
+    const flags = Ci.nsMsgFolderFlags;
+    const one = count === 1;
+    const name = destFolder.localizedName || destFolder.name;
+    let text;
+    if (destFolder.getFlag(flags.Trash)) text = one ? "Messaggio eliminato" : `${count} messaggi eliminati`;
+    else if (destFolder.isSpecialFolder(flags.Archive, true) || /archiv|tutti i messaggi|all mail/i.test(name)) {
+      text = one ? "Messaggio archiviato" : `${count} messaggi archiviati`;
+    } else {
+      text = (one ? "Messaggio spostato in " : `${count} messaggi spostati in `) + name;
+    }
+    const win = Services.wm.getMostRecentWindow("mail:3pane");
+    fedeLayoutWindows.get(win)?.showToast(text);
+  },
+};
 
 /* --- Dimensione del testo dell'interfaccia --------------------------------
    Usa la preferenza nativa mail.uifontsize (la stessa del menu ≡ → Dimensione
@@ -513,6 +616,7 @@ this.fedeLayout = class extends ExtensionCommon.ExtensionAPI {
           if (fedeLayoutRegistered) return;
           fedeLayoutRegistered = true;
           fedeInitFontSize();
+          fedeMailServices.mfn.addListener(fedeMoveListener, Ci.nsIMsgFolderNotificationService.msgsMoveCopyCompleted);
           try {
             fedeRegisterQuit();
           } catch (error) {
@@ -548,6 +652,7 @@ this.fedeLayout = class extends ExtensionCommon.ExtensionAPI {
     if (!fedeLayoutRegistered) return;
     fedeLayoutRegistered = false;
     fedeUnregisterQuit();
+    fedeMailServices.mfn.removeListener(fedeMoveListener);
     ExtensionSupport.unregisterWindowListener(FM_LAYOUT_LISTENER);
     for (const layout of fedeLayoutWindows.values()) layout.destroy();
     fedeLayoutWindows.clear();
