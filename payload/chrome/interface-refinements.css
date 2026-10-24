@@ -510,3 +510,162 @@
 @media (prefers-reduced-motion: reduce) {
   #fm-undo-toast.fm-undo-visible { animation: none; }
 }
+
+/* Ricerca come in Mail e Gmail (1.0.18): risultati nella lista messaggi. */
+body.fm-searching #threadPaneHeaderBar {
+  display: none !important;
+}
+#fm-search-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 14px 6px;
+  background: var(--fm-content);
+  color: var(--fm-text);
+  font: 0.9231rem var(--fm-font);
+  border-block-end: 1px solid var(--fm-hairline);
+}
+#fm-search-pane .fm-search-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+#fm-search-pane .fm-search-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-inline-size: 0;
+}
+#fm-search-pane h2 {
+  margin: 0;
+  font: 600 1.3846rem var(--fm-font-display);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#fm-search-pane h2 q {
+  quotes: "«" "»";
+}
+#fm-search-pane .fm-search-count {
+  color: var(--fm-text-2);
+  font-size: 0.8462rem;
+}
+#fm-search-pane button,
+#fm-search-pane select {
+  appearance: none !important;
+  margin: 0 !important;
+  min-inline-size: 0 !important;
+  min-block-size: 0 !important;
+  font: inherit !important;
+  color: inherit !important;
+  box-shadow: none !important;
+}
+#fm-search-pane .fm-search-close {
+  flex: none;
+  padding: 5px 10px !important;
+  border: none !important;
+  border-radius: 8px !important;
+  background: var(--fm-hover) !important;
+  color: var(--fm-text-2) !important;
+}
+#fm-search-pane .fm-search-close:hover {
+  color: var(--fm-text) !important;
+  background: var(--fm-side-selected) !important;
+}
+#fm-search-pane .fm-search-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+#fm-search-pane .fm-chip {
+  padding: 4px 11px !important;
+  border: 1px solid var(--fm-hairline) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: var(--fm-text-2) !important;
+  font-size: 0.8462rem !important;
+  max-inline-size: 15em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#fm-search-pane .fm-chip-select {
+  padding-inline-end: 24px !important;
+  background: transparent url("chrome://messenger/skin/icons/new/nav-down-sm.svg") no-repeat right 8px center / 10px !important;
+  -moz-context-properties: fill;
+  fill: currentColor;
+}
+#fm-search-pane .fm-chip:hover {
+  background-color: var(--fm-hover) !important;
+  color: var(--fm-text) !important;
+}
+#fm-search-pane .fm-chip-active {
+  border-color: transparent !important;
+  background-color: color-mix(in srgb, var(--fm-accent) 16%, transparent) !important;
+  color: var(--fm-accent) !important;
+  font-weight: 600 !important;
+}
+#fm-search-pane .fm-chip:focus-visible,
+#fm-search-pane .fm-search-hit:focus-visible,
+#fm-search-pane .fm-search-close:focus-visible {
+  outline: 2px solid var(--fm-accent) !important;
+  outline-offset: 1px !important;
+}
+#fm-search-pane h3 {
+  margin: 4px 0 0;
+  color: var(--fm-text-2);
+  font: 600 0.7692rem var(--fm-font);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+#fm-search-pane .fm-search-top {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+#fm-search-pane .fm-search-hit {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1px 8px;
+  padding: 7px 10px !important;
+  border: none !important;
+  border-radius: 9px !important;
+  background: var(--fm-hover) !important;
+  text-align: start !important;
+}
+#fm-search-pane .fm-search-hit:hover {
+  background: var(--fm-side-selected) !important;
+}
+#fm-search-pane .fm-hit-sender {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#fm-search-pane .fm-hit-date,
+#fm-search-pane .fm-hit-folder {
+  color: var(--fm-text-2);
+  font-size: 0.8462rem;
+  white-space: nowrap;
+}
+#fm-search-pane .fm-hit-subject {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#fm-search-pane .fm-hit-folder {
+  text-align: end;
+}
+.fm-search-preview {
+  overflow: hidden;
+  color: var(--fm-text-2);
+  font-size: 0.8462rem;
+  line-height: 1.35;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+::highlight(fm-search) {
+  background-color: rgba(255, 204, 0, 0.42);
+  color: inherit;
+}

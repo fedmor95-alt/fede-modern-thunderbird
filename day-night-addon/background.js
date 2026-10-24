@@ -45,3 +45,4 @@ messenger.storage.local.get(VIDEO_DEFAULTS)
   .then(config => messenger.calendarAssist.init(config))
   .catch(error => console.error("[calendar-assist]", error));
 messenger.fedeLayout.init().catch(error => console.error("[fede-layout]", error));
+messenger.fedeSearch.init().catch(error => console.error("[fede-search]", error));

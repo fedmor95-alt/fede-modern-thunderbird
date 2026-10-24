@@ -23,14 +23,14 @@ class DistributionTests(unittest.TestCase):
     def test_theme_and_calendar_share_the_existing_extension_id(self):
         with tempfile.TemporaryDirectory() as directory:
             package = Path(directory) / 'theme.xpi'
-            self.assertEqual(build_calendar_addon.build(package), '1.0.7')
+            self.assertEqual(build_calendar_addon.build(package), '1.0.8')
             first = package.read_bytes()
             build_calendar_addon.build(package)
             self.assertEqual(package.read_bytes(), first)
             with zipfile.ZipFile(package) as zipped:
                 manifest = json.loads(zipped.read('manifest.json'))
                 self.assertEqual(manifest['browser_specific_settings']['gecko']['id'], 'fede-day-night@local')
-                self.assertEqual(set(manifest['experiment_apis']), {'dayNight', 'calendarAssist', 'fedeLayout'})
+                self.assertEqual(set(manifest['experiment_apis']), {'dayNight', 'calendarAssist', 'fedeLayout', 'fedeSearch'})
                 self.assertIn('messenger.fedeLayout.init()', zipped.read('background.js').decode())
                 self.assertIn('function parseTitle', zipped.read('calendar-assist/experiment.js').decode())
                 self.assertIn('messenger.calendarAssist.init(config)', zipped.read('background.js').decode())

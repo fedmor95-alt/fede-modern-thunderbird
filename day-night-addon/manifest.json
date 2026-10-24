@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Fede Modern — tema e calendario",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Tema giorno/notte, barra laterale e spazi come in Mail, creazione eventi dal titolo e videoconferenze Meet/Zoom con OAuth.",
   "author": "Fede Modern",
   "browser_specific_settings": {
@@ -62,6 +62,20 @@
           ]
         ],
         "script": "experiment/layout.js"
+      }
+    },
+    "fedeSearch": {
+      "schema": "experiment/search-schema.json",
+      "parent": {
+        "scopes": [
+          "addon_parent"
+        ],
+        "paths": [
+          [
+            "fedeSearch"
+          ]
+        ],
+        "script": "experiment/search.js"
       }
     }
   }

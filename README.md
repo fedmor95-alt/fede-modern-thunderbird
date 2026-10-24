@@ -32,6 +32,13 @@ normale canale del sistema. Non disabilitare gli aggiornamenti di sicurezza.
 - 1.0.17: Annulla come in Mail. Ctrl+Z ripristina eliminazioni, archiviazioni
   e spostamenti ovunque sia il focus; dopo ogni azione compare l'avviso
   «Messaggio eliminato · Annulla» per qualche secondo.
+- 1.0.18: ricerca come in Mail e Gmail. La barra in alto cerca mentre si scrive
+  in tutte le cartelle (indice globale di Thunderbird) e mostra i risultati
+  nella lista messaggi della stessa scheda: riepilogo, filtri rapidi (cartelle,
+  non letti, con allegati, periodo, mittente, destinatario), «Migliori
+  risultati» per rilevanza, anteprima del testo e termini evidenziati anche
+  nel messaggio aperto. Operatori: da:, a:, oggetto:, ha:allegato, non:letti.
+  Esc, «Chiudi» o un clic su una cartella tornano alla posta normale.
 - Sidebar unificata; alias visivi Personale/Lavoro per account denominati con
   indirizzi email, indirizzi completi nei tooltip, nomi reali immutati.
 - Account e cartelle raccolti in una sezione espandibile, stati nativi conservati.
